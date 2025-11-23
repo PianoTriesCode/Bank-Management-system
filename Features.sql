@@ -112,10 +112,10 @@ SELECT CustomerID, FullName, Email, Phone, Address FROM Customer;
 GO
 
 -- Instead-of trigger to allow updates/inserts via the view and write audit entries
-IF OBJECT_ID('dbo.trigger_view_CustomerEditable_InsteadOf', 'TR') IS NOT NULL
-    DROP TRIGGER dbo.trigger_view_CustomerEditable_InsteadOf;
+IF OBJECT_ID('dbo.trigger_view_CustomerEditable', 'TR') IS NOT NULL
+    DROP TRIGGER dbo.trigger_view_CustomerEditable;
 GO
-CREATE TRIGGER dbo.trigger_view_CustomerEditable_InsteadOfUpdate
+CREATE TRIGGER dbo.trigger_view_CustomerEditable
 ON dbo.view_CustomerEditable
 INSTEAD OF UPDATE, INSERT
 AS
