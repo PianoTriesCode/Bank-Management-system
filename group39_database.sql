@@ -1163,6 +1163,67 @@ GO
 
 -- SELECT * FROM dbo.view_ActiveAccountsByBranch ORDER BY BranchID, AccountID;
 
+-- =========== PARTITION FUNCTIONALITY FOR TRANSACTIONS ===========
+-- Create partition function by year (Range RIGHT = include boundary in higher partition)
+IF NOT EXISTS (SELECT * FROM sys.partition_functions WHERE name = 'PF_TransactionByYear')
+BEGIN
+    CREATE PARTITION FUNCTION PF_TransactionByYear (DATETIME2)
+    AS RANGE RIGHT FOR VALUES (
+        '2019-01-01', '2020-01-01', '2021-01-01', '2022-01-01', '2023-01-01', '2024-01-01', '2025-01-01', '2026-01-01'
+    );
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.partition_schemes WHERE name = 'PS_TransactionByYear')
+BEGIN
+    -- Map all partitions to PRIMARY filegroup for simplicity (adjust for real deployment)
+    CREATE PARTITION SCHEME PS_TransactionByYear
+    AS PARTITION PF_TransactionByYear
+    ALL TO ([PRIMARY]);
+END
+GO
+
+IF OBJECT_ID('dbo.Transaction_Partitioned', 'U') IS NOT NULL
+    DROP TABLE dbo.Transaction_Partitioned;
+GO
+CREATE TABLE dbo.Transaction_Partitioned
+(
+    TransactionID BIGINT NOT NULL IDENTITY(1,1),
+    FromAccountID INT NULL,
+    ToAccountID INT NULL,
+    Amount DECIMAL(18,2) NOT NULL,
+    TransactionType NVARCHAR(20) NOT NULL,
+    Status NVARCHAR(20) NOT NULL DEFAULT 'Completed',
+    InitiatedBy NVARCHAR(100) NOT NULL,
+    Timestamp DATETIME2 NOT NULL,
+    Reference NVARCHAR(100) NULL,
+
+    CONSTRAINT PK_Transaction_Partitioned PRIMARY KEY (Timestamp, TransactionID)
+) ON PS_TransactionByYear(Timestamp);
+GO
+
+-- Checking if it was made successfully
+SELECT
+    TransactionID,
+    Timestamp,
+    $PARTITION.PF_TransactionByYear(Timestamp) AS PartitionNumber
+FROM dbo.Transaction_Partitioned
+ORDER BY PartitionNumber, Timestamp;
+
+SELECT 
+    p.partition_number,
+    p.rows
+FROM sys.partitions p
+JOIN sys.objects o ON p.object_id = o.object_id
+WHERE o.name = 'Transaction_Partitioned'
+  AND p.index_id IN (0, 1);
+
+SELECT TOP 20 *
+FROM dbo.[Transaction]
+ORDER BY TransactionID DESC;
+
+-- Loan Management
+
 USE IBMS_Phase2;
 GO
 
