@@ -21,16 +21,16 @@ PRINT '--- End quick reference ---';
 GO
 
 -- =========== Nonclustered index on Account(CustomerID) to speed lookups ===========
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IDX_Account_CustomerID' AND object_id = OBJECT_ID('Account'))
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'INDEX_Account_CustomerID' AND object_id = OBJECT_ID('Account'))
 BEGIN
-    CREATE NONCLUSTERED INDEX IDX_Account_CustomerID ON Account(CustomerID);
+    CREATE NONCLUSTERED INDEX INDEX_Account_CustomerID ON Account(CustomerID);
 END
 GO
 
 -- =========== Filtered index example on Account(Status) for active accounts only ===========
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IDX_Account_Active_Status' AND object_id = OBJECT_ID('Account'))
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'INDEX_Account_Active' AND object_id = OBJECT_ID('Account'))
 BEGIN
-    CREATE NONCLUSTERED INDEX IDX_Account_Active_Status ON Account(Status)
+    CREATE NONCLUSTERED INDEX INDEX_Account_Active ON Account(Status)
     WHERE Status = 'Active';
 END
 GO
@@ -50,7 +50,6 @@ RETURN
         C.Email,
         C.Phone,
         C.Address,
-        C.KYCStatus,
         AccountID = A.AccountID,
         A.AccountNumber,
         A.AccountTypeID,
@@ -73,13 +72,12 @@ SELECT
     C.Email,
     C.Phone,
     C.Address,
-    C.KYCStatus,
     TotalAccounts = COUNT(A.AccountID),
     TotalBalance = ISNULL(SUM(A.Balance), 0.00)
 FROM Customer C
 LEFT JOIN Account A ON A.CustomerID = C.CustomerID
 GROUP BY
-    C.CustomerID, C.FullName, C.Email, C.Phone, C.Address, C.KYCStatus;
+    C.CustomerID, C.FullName, C.Email, C.Phone, C.Address;
 GO
 
 -- To see reults
@@ -110,15 +108,14 @@ IF OBJECT_ID('dbo.view_CustomerEditable', 'V') IS NOT NULL
 GO
 CREATE VIEW dbo.view_CustomerEditable
 AS
-SELECT CustomerID, FullName, Email, Phone, Address, KYCStatus
-FROM Customer;
+SELECT CustomerID, FullName, Email, Phone, Address FROM Customer;
 GO
 
 -- Instead-of trigger to allow updates/inserts via the view and write audit entries
-IF OBJECT_ID('dbo.tr_view_CustomerEditable_InsteadOfUpdate', 'TR') IS NOT NULL
-    DROP TRIGGER dbo.tr_view_CustomerEditable_InsteadOfUpdate;
+IF OBJECT_ID('dbo.trigger_view_CustomerEditable_InsteadOf', 'TR') IS NOT NULL
+    DROP TRIGGER dbo.trigger_view_CustomerEditable_InsteadOf;
 GO
-CREATE TRIGGER dbo.tr_view_CustomerEditable_InsteadOfUpdate
+CREATE TRIGGER dbo.trigger_view_CustomerEditable_InsteadOfUpdate
 ON dbo.view_CustomerEditable
 INSTEAD OF UPDATE, INSERT
 AS
@@ -128,21 +125,18 @@ BEGIN
     -- Handle INSERTS through view -> insert into Customer
     IF EXISTS (SELECT 1 FROM inserted)
     BEGIN
-        INSERT INTO Customer (FullName, DOB, Email, Phone, Address, KYCStatus, KYCDocumentRef)
+        INSERT INTO Customer (FullName, DOB, Email, Phone, Address)
         SELECT
             ISNULL(FullName, 'Unknown'),
             DATEADD(YEAR, -25, GETDATE()), -- placeholder DOB if none provided (must be handled by app)
             Email,
             Phone,
-            ISNULL(Address, ''),
-            ISNULL(KYCStatus, 'Pending'),
-            NULL
+            ISNULL(Address, '')
         FROM inserted
         WHERE NOT EXISTS (SELECT 1 FROM Customer C WHERE C.Email = inserted.Email);
-        -- NOTE: For production you'd add better duplicate handling & validation
     END
 
-    -- Handle UPDATE: update base table and write an audit log row per change
+    -- Handle UPDATE
     IF EXISTS (SELECT 1 FROM deleted) AND EXISTS (SELECT 1 FROM inserted)
     BEGIN
         UPDATE C
@@ -150,8 +144,7 @@ BEGIN
             FullName = I.FullName,
             Email = I.Email,
             Phone = I.Phone,
-            Address = I.Address,
-            KYCStatus = I.KYCStatus
+            Address = I.Address
         FROM Customer C
         JOIN inserted I ON C.CustomerID = I.CustomerID;
 
@@ -163,17 +156,17 @@ BEGIN
             'Update via view_CustomerEditable',
             ISNULL(SUSER_SNAME(), 'UnknownUser'),
             GETDATE(),
-            'Updated FullName/Email/Phone/Address/KYCStatus'
+            'Updated FullName/Email/Phone/Address'
         FROM inserted I;
     END
 END;
 GO
 
 -- =========== AFTER TRIGGERS: After INSERT on Customer -> write AuditLog ===========
-IF OBJECT_ID('dbo.tr_Customer_AfterInsert', 'TR') IS NOT NULL
-    DROP TRIGGER dbo.tr_Customer_AfterInsert;
+IF OBJECT_ID('dbo.trigger_Customer_AfterInsert', 'TR') IS NOT NULL
+    DROP TRIGGER dbo.trigger_Customer_AfterInsert;
 GO
-CREATE TRIGGER dbo.tr_Customer_AfterInsert
+CREATE TRIGGER dbo.trigger_Customer_AfterInsert
 ON Customer
 AFTER INSERT
 AS
@@ -212,25 +205,15 @@ WHERE Email = 'sohaf@email.com';
 SELECT TOP (10) * FROM AuditLog;
 
 UPDATE dbo.view_CustomerEditable
-SET Phone = '6767-420',
-    Address = '467 Gulbahar'
+SET Phone = '6767-42',
+    Address = '467-Gulbahar'
 WHERE Email = 'sohaf@email.com';
-
-UPDATE dbo.view_CustomerEditable
-SET FullName = 'Alice',
-    Address = '123 Baker St.'
-WHERE Email = 'alice@email.com';
 
 SELECT *
 FROM Customer
 WHERE Email = 'sohaf@email.com';
 
-SELECT *
-FROM Customer
-WHERE Email = 'alice@email.com';
-
-SELECT TOP (10) * FROM AuditLog;
-
+SELECT TOP 10 * FROM AuditLog ORDER BY Timestamp DESC;
 
 -- =========== Create Customer using Stored Procedure ===========
 IF OBJECT_ID('dbo.sp_CreateCustomer', 'P') IS NOT NULL
@@ -242,7 +225,6 @@ CREATE PROCEDURE dbo.sp_CreateCustomer
     @Email NVARCHAR(100),
     @Phone NVARCHAR(20),
     @Address NVARCHAR(255),
-    @KYCDocumentRef NVARCHAR(100) = NULL,
     @NewCustomerID INT OUTPUT
 AS
 BEGIN
@@ -258,8 +240,8 @@ BEGIN
             RETURN;
         END
 
-        INSERT INTO Customer (FullName, DOB, Email, Phone, Address, KYCDocumentRef, KYCStatus, CreatedAt)
-        VALUES (@FullName, @DOB, @Email, @Phone, @Address, @KYCDocumentRef, 'Pending', GETDATE());
+        INSERT INTO Customer (FullName, DOB, Email, Phone, Address, CreatedAt)
+        VALUES (@FullName, @DOB, @Email, @Phone, @Address, GETDATE());
 
         SET @NewCustomerID = SCOPE_IDENTITY();
 
@@ -286,7 +268,6 @@ EXEC dbo.sp_CreateCustomer
     @Email = 'shamala@example.com',
     @Phone = '123-456-789',
     @Address = '123 Baker Road',
-    @KYCDocumentRef = 'KYC123',
     @NewCustomerID = @NewCustomerID OUTPUT;
 
 SELECT @NewCustomerID AS NewCustomerID;
@@ -295,7 +276,7 @@ SELECT *
 FROM Customer
 WHERE Email = 'shamala@example.com';
 
-SELECT TOP (10) * FROM AuditLog;
+SELECT TOP 10 * FROM AuditLog ORDER BY Timestamp DESC;
 
 
 -- =========== READ Customer using Stored Procedure ===========
@@ -324,7 +305,7 @@ END;
 GO
 
 -- Testing READ
-EXEC dbo.sp_GetCustomerByID @CustomerID = 10004;
+EXEC dbo.sp_GetCustomerByID @CustomerID = 10002;
 
 -- =========== UPDATE Customer using Stored Procedure ===========
 IF OBJECT_ID('dbo.sp_UpdateCustomer', 'P') IS NOT NULL
@@ -334,8 +315,7 @@ CREATE PROCEDURE dbo.sp_UpdateCustomer
     @CustomerID INT,
     @FullName NVARCHAR(100) = NULL,
     @Phone NVARCHAR(20) = NULL,
-    @Address NVARCHAR(255) = NULL,
-    @KYCStatus NVARCHAR(20) = NULL
+    @Address NVARCHAR(255) = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -346,8 +326,7 @@ BEGIN
         SET
             FullName = ISNULL(@FullName, FullName),
             Phone = ISNULL(@Phone, Phone),
-            Address = ISNULL(@Address, Address),
-            KYCStatus = ISNULL(@KYCStatus, KYCStatus)
+            Address = ISNULL(@Address, Address)
         WHERE CustomerID = @CustomerID;
 
         INSERT INTO AuditLog (EntityName, EntityID, Action, PerformedBy, Timestamp, Details)
@@ -373,7 +352,7 @@ SELECT *
 FROM Customer
 WHERE Email = 'shamala@example.com';
 
-SELECT TOP (10) * FROM AuditLog;
+SELECT TOP 10 * FROM AuditLog ORDER BY Timestamp DESC;
 
 -- =========== DELETE Customer using Stored Procedure ===========
 IF OBJECT_ID('dbo.sp_DeleteCustomer', 'P') IS NOT NULL
@@ -413,10 +392,209 @@ GO
 
 -- Testing Delete
 EXEC dbo.sp_DeleteCustomer
-    @CustomerID = 10003;
+    @CustomerID = 10002;
 
 SELECT *
 FROM Customer
 WHERE Email = 'shamala@example.com';
 
-SELECT TOP (10) * FROM AuditLog;
+SELECT TOP 10 * FROM AuditLog ORDER BY Timestamp DESC;
+
+
+-- --------------------------------------------------------------------
+-- Stored Procedure: sp_TransferFunds
+--  - Parameters:
+--      @FromAccountID, @ToAccountID, @Amount, @InitiatedBy, @Reference
+--      @NewTransactionID OUTPUT
+--  - Behavior:
+--      * Locks both account rows with UPDLOCK, ROWLOCK (ordered by AccountID to reduce deadlocks) to achieve consistency
+--      * Verifies both accounts exist and are Active
+--      * Checks sufficient balance on FromAccount
+--      * Updates balances in the same transaction
+--      * Inserts a single record into [Transaction]
+--      * Writes an AuditLog entry
+--      * Retries up to 3 times on deadlock (error 1205)
+-- --------------------------------------------------------------------
+
+IF OBJECT_ID('dbo.sp_TransferFunds', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.sp_TransferFunds;
+GO
+
+CREATE PROCEDURE dbo.sp_TransferFunds
+    @FromAccountID INT,
+    @ToAccountID INT,
+    @Amount DECIMAL(18,2),
+    @InitiatedBy NVARCHAR(100) = NULL,
+    @Reference NVARCHAR(200) = NULL,
+    @NewTransactionID BIGINT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF @FromAccountID IS NULL OR @ToAccountID IS NULL
+    BEGIN
+        RAISERROR('FromAccountID and ToAccountID must be provided.', 16, 1);
+        RETURN;
+    END
+
+    IF @Amount IS NULL OR @Amount <= 0
+    BEGIN
+        RAISERROR('Amount must be a positive value.', 16, 1);
+        RETURN;
+    END
+
+    IF @FromAccountID = @ToAccountID
+    BEGIN
+        RAISERROR('FromAccountID and ToAccountID cannot be the same.', 16, 1);
+        RETURN;
+    END
+
+    DECLARE @attempt INT = 1;
+    DECLARE @maxAttempts INT = 3;
+    DECLARE @delay NVARCHAR(8) = '00:00:00.200'; -- delay in case of deadlock before retrying
+
+    DECLARE @errnum INT;
+    DECLARE @errmsg NVARCHAR(4000);
+
+    SET @NewTransactionID = NULL;
+
+    WHILE @attempt <= @maxAttempts
+    BEGIN
+        BEGIN TRY
+            BEGIN TRAN;
+
+            -- Lock both account rows in a stable order to reduce deadlocks.
+            -- UPDLOCK obtains update locks, ROWLOCK uses row-level.
+            -- We select both rows in one statement to ensure ordering.
+            DECLARE @A1 INT = CASE WHEN @FromAccountID < @ToAccountID THEN @FromAccountID ELSE @ToAccountID END;
+            DECLARE @A2 INT = CASE WHEN @FromAccountID < @ToAccountID THEN @ToAccountID ELSE @FromAccountID END;
+
+            SELECT AccountID, Balance, Status
+            FROM dbo.Account WITH (ROWLOCK, UPDLOCK)
+            WHERE AccountID IN (@A1, @A2)
+            ORDER BY AccountID;
+
+            -- Re-read balances into local variables
+            DECLARE @FromBalance DECIMAL(18,2);
+            DECLARE @ToBalance DECIMAL(18,2);
+            DECLARE @FromStatus NVARCHAR(50);
+            DECLARE @ToStatus NVARCHAR(50);
+
+            SELECT @FromBalance = Balance, @FromStatus = Status
+            FROM dbo.Account WITH (ROWLOCK, UPDLOCK)
+            WHERE AccountID = @FromAccountID;
+
+            SELECT @ToBalance = Balance, @ToStatus = Status
+            FROM dbo.Account WITH (ROWLOCK, UPDLOCK)
+            WHERE AccountID = @ToAccountID;
+
+            -- Validate if both accounts exist
+            IF @FromBalance IS NULL
+            BEGIN
+                RAISERROR('FromAccountID does not exist.', 16, 1);
+                ROLLBACK TRAN;
+                RETURN;
+            END
+            IF @ToBalance IS NULL
+            BEGIN
+                RAISERROR('ToAccountID does not exist.', 16, 1);
+                ROLLBACK TRAN;
+                RETURN;
+            END
+
+            -- Validate if both accounts are Active
+            IF ISNULL(@FromStatus,'') <> 'Active'
+            BEGIN
+                RAISERROR('From account is not Active.', 16, 1);
+                ROLLBACK TRAN;
+                RETURN;
+            END
+            IF ISNULL(@ToStatus,'') <> 'Active'
+            BEGIN
+                RAISERROR('To account is not Active.', 16, 1);
+                ROLLBACK TRAN;
+                RETURN;
+            END
+
+            -- Checking for sufficient funds
+            IF @FromBalance < @Amount
+            BEGIN
+                RAISERROR('Insufficient funds on source account.', 16, 1);
+                ROLLBACK TRAN;
+                RETURN;
+            END
+
+            -- Updating balances
+            UPDATE dbo.Account
+            SET Balance = Balance - @Amount
+            WHERE AccountID = @FromAccountID;
+
+            UPDATE dbo.Account
+            SET Balance = Balance + @Amount
+            WHERE AccountID = @ToAccountID;
+
+            INSERT INTO dbo.[Transaction] (FromAccountID, ToAccountID, Amount, TransactionType, Status, InitiatedBy, Timestamp, Reference)
+            VALUES (@FromAccountID, @ToAccountID, @Amount, 'Transfer', 'Completed', ISNULL(@InitiatedBy, SUSER_SNAME()), SYSUTCDATETIME(), @Reference);
+
+            SET @NewTransactionID = SCOPE_IDENTITY();
+
+            -- Audit log entry
+            INSERT INTO dbo.AuditLog (EntityName, EntityID, Action, PerformedBy, Timestamp, Details)
+            VALUES ('Transaction', CAST(@NewTransactionID AS NVARCHAR(100)), 'sp_TransferFunds', ISNULL(@InitiatedBy, SUSER_SNAME()), GETDATE(),
+                    CONCAT('Transfer of ', FORMAT(@Amount, 'N2'), ' from Account ', @FromAccountID, ' to ', @ToAccountID, '; TxID=', CAST(@NewTransactionID AS NVARCHAR(50))));
+
+            COMMIT TRAN;
+
+            BREAK;
+        END TRY
+        BEGIN CATCH
+            SET @errnum = ERROR_NUMBER();
+            SET @errmsg = ERROR_MESSAGE();
+
+            IF XACT_STATE() <> 0
+            BEGIN
+                ROLLBACK TRAN;
+            END
+
+            -- Deadlock (1205) - retry
+            IF @errnum = 1205 AND @attempt < @maxAttempts
+            BEGIN
+                SET @attempt = @attempt + 1;
+                WAITFOR DELAY @delay; -- wait before trying again
+                CONTINUE;
+            END
+            ELSE
+            BEGIN
+                RAISERROR('Transfer failed: %s (Err=%d)', 16, 1, @errmsg, @errnum);
+                RETURN;
+            END
+        END CATCH
+    END
+
+    -- If @NewTransactionID null, means all attempts failed
+    IF @NewTransactionID IS NULL
+    BEGIN
+        RAISERROR('Transfer did not complete after retries.', 16, 1);
+    END
+END;
+GO
+
+
+-- TESTING ATOMIC TRANSACTION
+SELECT * FROM dbo.view_ActiveAccountsByBranch ORDER BY BranchID, AccountID;
+
+DECLARE @TxID BIGINT;
+
+EXEC dbo.sp_TransferFunds
+    @FromAccountID = 20,
+    @ToAccountID = 32,
+    @Amount = 924.00,
+    @InitiatedBy = 'admin_user',
+    @Reference = 'Test transfer',
+    @NewTransactionID = @TxID OUTPUT;
+
+SELECT @TxID AS NewTransactionID;
+
+SELECT TOP 10 * FROM AuditLog ORDER BY Timestamp DESC;
+
+SELECT * FROM dbo.view_ActiveAccountsByBranch ORDER BY BranchID, AccountID;

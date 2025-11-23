@@ -6,12 +6,18 @@
 */
 
 -- Use the correct database (Uncomment if you created a specific DB)
--- USE Master;
--- GO
--- CREATE DATABASE IBMS_Phase2;
--- GO
--- USE IBMS_Phase2;a
--- GO
+USE master;
+GO
+IF EXISTS (SELECT * FROM sys.databases WHERE name = 'IBMS_Phase2')
+BEGIN
+    ALTER DATABASE IBMS_Phase2 SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE IBMS_Phase2;
+END
+GO
+CREATE DATABASE IBMS_Phase2;
+GO
+USE IBMS_Phase2;
+GO
 
 -- 1. CLEANUP: Drop tables in reverse dependency order to avoid FK errors
 DROP TABLE IF EXISTS AuditLog;
