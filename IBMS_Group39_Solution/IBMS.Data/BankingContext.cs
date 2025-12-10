@@ -5,8 +5,8 @@ namespace IBMS.Data
 {
     public class BankingContext : DbContext
     {
-        // Update with your actual connection string
-        private const string ConnectionString = "Server=localhost;Database=IBMS_Phase2;Trusted_Connection=True;TrustServerCertificate=True;";
+        // HARDCODED FALLBACK: This matches your specific Docker setup from the screenshot
+        private const string ConnectionString = "Server=localhost;Database=IBMS_Phase2;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;";
 
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Account> Accounts { get; set; }
@@ -15,10 +15,21 @@ namespace IBMS.Data
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Branch> Branches { get; set; }
 
+        // Standard constructor
+        public BankingContext()
+        {
+        }
+
+        // Constructor accepting options (good practice)
+        public BankingContext(DbContextOptions<BankingContext> options) : base(options)
+        {
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
+                // Force usage of the correct connection string
                 optionsBuilder.UseSqlServer(ConnectionString);
             }
         }

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IBMS.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+85bfeaf1c058d24dc53757dbe316dde333ef34be")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ee375e46fbbf720219fdb9382facc238c5883810")]
 [assembly: System.Reflection.AssemblyProductAttribute("IBMS.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IBMS.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

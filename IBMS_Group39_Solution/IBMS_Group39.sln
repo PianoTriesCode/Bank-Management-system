@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IBMS.Data", "IBMS.Data\IBMS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IBMS.WinForms", "IBMS.WinForms\IBMS.WinForms.csproj", "{C02E0640-8F78-4B99-ADE0-8CCAD295F1CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IBMS.TestConnection", "IBMS.TestConnection\IBMS.TestConnection.csproj", "{9920CC53-D051-453B-A022-1B5578EA4305}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{C02E0640-8F78-4B99-ADE0-8CCAD295F1CD}.Release|x64.Build.0 = Release|Any CPU
 		{C02E0640-8F78-4B99-ADE0-8CCAD295F1CD}.Release|x86.ActiveCfg = Release|Any CPU
 		{C02E0640-8F78-4B99-ADE0-8CCAD295F1CD}.Release|x86.Build.0 = Release|Any CPU
+		{9920CC53-D051-453B-A022-1B5578EA4305}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9920CC53-D051-453B-A022-1B5578EA4305}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9920CC53-D051-453B-A022-1B5578EA4305}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9920CC53-D051-453B-A022-1B5578EA4305}.Debug|x64.Build.0 = Debug|Any CPU
+		{9920CC53-D051-453B-A022-1B5578EA4305}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9920CC53-D051-453B-A022-1B5578EA4305}.Debug|x86.Build.0 = Debug|Any CPU
+		{9920CC53-D051-453B-A022-1B5578EA4305}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9920CC53-D051-453B-A022-1B5578EA4305}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9920CC53-D051-453B-A022-1B5578EA4305}.Release|x64.ActiveCfg = Release|Any CPU
+		{9920CC53-D051-453B-A022-1B5578EA4305}.Release|x64.Build.0 = Release|Any CPU
+		{9920CC53-D051-453B-A022-1B5578EA4305}.Release|x86.ActiveCfg = Release|Any CPU
+		{9920CC53-D051-453B-A022-1B5578EA4305}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
