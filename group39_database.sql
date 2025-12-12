@@ -879,6 +879,8 @@ GO
 CREATE PROCEDURE dbo.sp_UpdateCustomer
     @CustomerID INT,
     @FullName NVARCHAR(100) = NULL,
+    @DOB DATE = NULL,
+    @Email NVARCHAR(100) = NULL,
     @Phone NVARCHAR(20) = NULL,
     @Address NVARCHAR(255) = NULL
 AS
@@ -890,6 +892,8 @@ BEGIN
         UPDATE Customer
         SET
             FullName = ISNULL(@FullName, FullName),
+            DOB = ISNULL(@DOB, DOB),
+            Email = ISNULL(@Email, Email),
             Phone = ISNULL(@Phone, Phone),
             Address = ISNULL(@Address, Address)
         WHERE CustomerID = @CustomerID;

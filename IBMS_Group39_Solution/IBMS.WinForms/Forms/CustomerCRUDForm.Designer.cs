@@ -97,7 +97,7 @@ namespace IBMS.WinForms.Forms
             btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 
             // --- Form Settings ---
-            this.ClientSize = new System.Drawing.Size(400, 300);
+            this.ClientSize = new System.Drawing.Size(400, 320);
             this.Text = "Customer Editor";
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
