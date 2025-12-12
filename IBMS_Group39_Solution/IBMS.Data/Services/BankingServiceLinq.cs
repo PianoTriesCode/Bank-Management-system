@@ -59,12 +59,45 @@ namespace IBMS.Data.Services
 
         public void UpdateCustomer(Customer c)
         {
-            throw new NotImplementedException("LINQ mode does not support UpdateCustomer yet.");
+            // throw new NotImplementedException("LINQ mode does not support UpdateCustomer yet.");
+            _context.Customers.Attach(c);
+            _context.Entry(c).State = EntityState.Modified;
+            
+            var audit = new AuditLog
+            {
+                EntityName = "Customer",
+                EntityID = c.CustomerID.ToString(),
+                Action = "UpdateCustomer",
+                PerformedBy = "sa",
+                Timestamp = DateTime.Now,
+                Details = "Customer updated via LINQ"
+            };
+            _context.AuditLog.Add(audit);
+
+            _context.SaveChanges();
         }
 
         public void DeleteCustomer(int id)
         {
-            throw new NotImplementedException("LINQ mode does not support DeleteCustomer yet.");
+            // throw new NotImplementedException("LINQ mode does not support DeleteCustomer yet.");
+            var customer = _context.Customers.Find(id);
+            if (customer == null)
+                throw new Exception("Customer not found.");
+
+            _context.Customers.Remove(customer);
+
+            var audit = new AuditLog
+            {
+                EntityName = "Customer",
+                EntityID = id.ToString(),
+                Action = "DeleteCustomer",
+                PerformedBy = "sa",
+                Timestamp = DateTime.Now,
+                Details = "Customer deleted via LINQ"
+            };
+            _context.AuditLog.Add(audit);
+
+            _context.SaveChanges();
         }
 
         public List<CustomerViewModel> GetAllCustomers()
@@ -103,7 +136,7 @@ namespace IBMS.Data.Services
 
         public bool TransferFunds(int fromAccId, int toAccId, decimal amount, string initiatedBy)
         {
-            // LINQ: Transaction Logic (Replicating the SP logic in C#)
+            // LINQ: Transaction Logic
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
@@ -132,8 +165,20 @@ namespace IBMS.Data.Services
                         Timestamp = DateTime.Now,
                         Reference = "LINQ Transfer"
                     };
-
                     _context.Transactions.Add(trans);
+
+                    _context.SaveChanges();
+
+                    var audit = new AuditLog
+                    {
+                        EntityName = "Transaction",
+                        EntityID = trans.TransactionID.ToString(),
+                        Action = "TransferFunds",
+                        PerformedBy = initiatedBy,
+                        Timestamp = DateTime.Now,
+                        Details = "Transfer of "+amount+" from Account "+fromAccId+" to "+toAccId+" via LINQ service"
+                    };
+                    _context.AuditLog.Add(audit);
                     
                     _context.SaveChanges(); // Persist updates
                     transaction.Commit(); // Commit transaction
@@ -176,7 +221,7 @@ namespace IBMS.Data.Services
                 .ToList();
         }
 
-        public List<AuditLog> GetAuditLogs()
+        public List<AuditLog> GetAuditLogs() 
         {
             return _context.AuditLog
                 .OrderByDescending(a => a.Timestamp)

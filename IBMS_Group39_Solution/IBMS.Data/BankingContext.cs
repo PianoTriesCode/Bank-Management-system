@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Metadata;
 using IBMS.Core.Models;
 
 namespace IBMS.Data
@@ -34,6 +36,14 @@ namespace IBMS.Data
                 // Force usage of the correct connection string
                 optionsBuilder.UseSqlServer(ConnectionString);
             }
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            var entityType = modelBuilder.Entity<Customer>().Metadata;
+            EntityTypeBuilder.HasTrigger(entityType, "trigger_Customer_AfterInsert");
         }
     }
 }

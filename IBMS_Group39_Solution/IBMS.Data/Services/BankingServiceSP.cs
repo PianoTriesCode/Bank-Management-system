@@ -29,7 +29,6 @@ namespace IBMS.Data.Services
             // _transactionRepo = transactionRepo;
         }
 
-
         public Employee Login(int employeeId)
         {
             // Calls the Stored Procedure 'sp_EmployeeLogin'
@@ -70,9 +69,6 @@ namespace IBMS.Data.Services
 
         public List<CustomerViewModel> GetAllCustomers()
         {
-            // Calls the View 'view_Customer360'
-            // Since this View doesn't match a DB Table exactly, we use raw ADO.NET
-            // to map it to our ViewModel manually.
             var result = new List<CustomerViewModel>();
             var conn = _context.Database.GetDbConnection();
             
@@ -130,7 +126,6 @@ namespace IBMS.Data.Services
         public decimal GetTotalAssets(int customerId)
         {
             // Calls the Scalar Function 'fn_GetTotalCustomerAssets'
-            // EF Core doesn't map Scalar Functions easily in LINQ, so we use ADO.NET
             var conn = _context.Database.GetDbConnection();
             try
             {
@@ -188,13 +183,11 @@ namespace IBMS.Data.Services
 
         public List<Transaction> GetAccountStatement(int accountId)
         {
-            // Calls the CTE-based SP 'sp_GetAccountStatementWithRunningBalance'
+            // Calls the CTE-based SP 'sp_GetAccountStatement'
             var param = new SqlParameter("@AccountID", accountId);
 
-            // Note: The SP returns extra columns (RunningBalance) that aren't in the Model.
-            // EF Core will simply ignore columns that don't match properties in the 'Transaction' class.
             return _context.Transactions
-                .FromSqlRaw("EXEC sp_GetAccountStatementWithRunningBalance @AccountID", param)
+                .FromSqlRaw("EXEC sp_GetAccountStatement @AccountID", param)
                 .ToList();
         }
 

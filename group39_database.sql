@@ -611,19 +611,19 @@ RETURNS TABLE
 AS
 RETURN
 (
-    SELECT
-        C.CustomerID,
-        C.FullName,
-        C.Email,
-        C.Phone,
-        C.Address,
-        AccountID = A.AccountID,
-        A.AccountNumber,
-        A.AccountTypeID,
-        A.Balance
-    FROM Customer C
-    LEFT JOIN Account A ON A.CustomerID = C.CustomerID
-    WHERE C.CustomerID = @CustomerID
+    SELECT 
+        c.CustomerID,
+        c.FullName,
+        c.Email,
+        c.Phone,
+        c.Address,
+        a.AccountID,
+        a.AccountNumber,
+        a.AccountTypeID,
+        a.Balance
+    FROM Customer c
+    INNER JOIN Account a ON a.CustomerID = c.CustomerID
+    WHERE c.CustomerID = @CustomerID
 );
 GO
 
@@ -1243,6 +1243,28 @@ BEGIN
         Timestamp,
         Details
     FROM AuditLog
+    ORDER BY Timestamp DESC;
+END;
+GO
+
+CREATE PROCEDURE sp_GetAccountStatement
+    @AccountID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        TransactionID,
+        FromAccountID,
+        ToAccountID,
+        Amount,
+        TransactionType,
+        Status,
+        InitiatedBy,
+        Timestamp,
+        Reference
+    FROM [Transaction]
+    WHERE FromAccountID = @AccountID OR ToAccountID = @AccountID
     ORDER BY Timestamp DESC;
 END;
 GO

@@ -11,7 +11,7 @@ namespace IBMS.Core.Interfaces
 
         // --- Customer Management ---
         // Uses: sp_CreateCustomer vs EF .Add()
-        // int CreateCustomer(Customer customer);
+        int CreateCustomer(Customer c);
         
         // Uses: sp_GetCustomerByID vs EF .Find()
         Customer GetCustomer(int customerId);
@@ -23,7 +23,7 @@ namespace IBMS.Core.Interfaces
 
         List<CustomerAccountSummary> GetCustomerAccountSummary(int customerId);
 
-        int CreateCustomer(Customer c);
+        
         void UpdateCustomer(Customer c);
         void DeleteCustomer(int id);
 

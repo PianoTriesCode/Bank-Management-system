@@ -48,7 +48,7 @@ namespace IBMS.WinForms.Forms
         private void InitializeComponent()
         {
             this.Text = $"IBMS Dashboard - Logged in as: {_currentUser.FullName}";
-            this.Size = new Size(800, 600);
+            this.Size = new Size(800, 650);
             this.StartPosition = FormStartPosition.CenterScreen;
 
             // --- 1. Mode Selection (The Factory Pattern UI) ---
