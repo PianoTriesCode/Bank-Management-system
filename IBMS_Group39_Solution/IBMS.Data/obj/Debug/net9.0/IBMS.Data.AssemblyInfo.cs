@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IBMS.Data")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a4c7ee3ba8ea8c7ce8d027ad2d7c303dc513ff0e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+983d1740d7d91a47178a9164f6e4a3ed8746836d")]
 [assembly: System.Reflection.AssemblyProductAttribute("IBMS.Data")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IBMS.Data")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

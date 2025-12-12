@@ -84,23 +84,52 @@ namespace IBMS.WinForms.Forms
 
         private void BtnSave_Click(object sender, EventArgs e)
         {
-            bool isEdit = _existing != null;
+            // 1. Validate Account Number
+            if (string.IsNullOrWhiteSpace(txtAccountNumber.Text))
+            {
+                MessageBox.Show("Account Number is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtAccountNumber.Focus();
+                return;
+            }
 
+            // 2. Validate Balance (Stop the silent failure)
+            if (!decimal.TryParse(txtBalance.Text, out decimal balance) || balance < 0)
+            {
+                MessageBox.Show("Please enter a valid non-negative balance.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtBalance.Focus();
+                return;
+            }
+
+            // 3. Validate Dropdowns
+            if (cmbAccountType.SelectedValue == null || cmbBranch.SelectedValue == null)
+            {
+                MessageBox.Show("Please select a valid Account Type and Branch.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            bool isEdit = _existing != null;
             var acc = isEdit ? _existing : new Account();
 
             acc.CustomerID = _customerId;
             acc.AccountTypeID = (int)cmbAccountType.SelectedValue;
             acc.BranchID = (int)cmbBranch.SelectedValue;
-            acc.Balance = decimal.TryParse(txtBalance.Text, out var b) ? b : 0;
+            acc.Balance = balance; // Use the parsed variable
             acc.Status = cmbStatus.SelectedItem?.ToString() ?? "Active";
-            acc.AccountNumber = txtAccountNumber.Text;
+            acc.AccountNumber = txtAccountNumber.Text.Trim(); // Trim whitespace
 
-            if (isEdit)
-                _service.UpdateAccount(acc);
-            else
-                _service.CreateAccount(acc);
+            try 
+            {
+                if (isEdit)
+                    _service.UpdateAccount(acc);
+                else
+                    _service.CreateAccount(acc);
 
-            DialogResult = DialogResult.OK;
+                DialogResult = DialogResult.OK;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error saving account: " + ex.Message);
+            }
         }
     }
 }

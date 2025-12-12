@@ -32,20 +32,53 @@ namespace IBMS.WinForms.Forms
             txtAddress.Text = _customer.Address;
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
+       private void btnSave_Click(object sender, EventArgs e)
         {
-            _customer.FullName = txtName.Text;
+            if (string.IsNullOrWhiteSpace(txtName.Text))
+            {
+                MessageBox.Show("Full Name is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtName.Focus();
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(txtEmail.Text) || !txtEmail.Text.Contains("@") || !txtEmail.Text.Contains("."))
+            {
+                MessageBox.Show("Please enter a valid Email address.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtEmail.Focus();
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtPhone.Text) || txtPhone.Text.Length < 7)
+            {
+                MessageBox.Show("Please enter a valid Phone number.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtPhone.Focus();
+                return;
+            }
+
+            if (dtpDOB.Value > DateTime.Today)
+            {
+                MessageBox.Show("Date of Birth cannot be in the future.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            _customer.FullName = txtName.Text.Trim();
             _customer.DOB = dtpDOB.Value;
-            _customer.Email = txtEmail.Text;
-            _customer.Phone = txtPhone.Text;
-            _customer.Address = txtAddress.Text;
+            _customer.Email = txtEmail.Text.Trim();
+            _customer.Phone = txtPhone.Text.Trim();
+            _customer.Address = txtAddress.Text.Trim();
 
-            if (_isEdit)
-                _service.UpdateCustomer(_customer);
-            else
-                _service.CreateCustomer(_customer);
+            try
+            {
+                if (_isEdit)
+                    _service.UpdateCustomer(_customer);
+                else
+                    _service.CreateCustomer(_customer);
 
-            DialogResult = DialogResult.OK;
+                DialogResult = DialogResult.OK;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error saving customer: " + ex.Message);
+            }
         }
     }
 }
