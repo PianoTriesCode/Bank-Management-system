@@ -76,6 +76,47 @@ namespace IBMS.Data.Services
 
             _context.SaveChanges();
         }
+        public List<TransactionStatementViewModel> GetAccountStatement(int accountId)
+        {
+            var rawTransactions = _context.Transactions
+            .Where(t => t.FromAccountID == accountId || t.ToAccountID == accountId)
+            .OrderBy(t => t.Timestamp) // Ascending is required for the math loop
+            .Select(t => new 
+            {
+                t.TransactionID,
+                t.Timestamp,
+                t.TransactionType,
+                t.Amount,
+                t.Reference,
+                // Pre-calculate "Net Change" logic in the database query
+                NetChange = (t.ToAccountID == accountId) ? t.Amount : -t.Amount
+            })
+            .ToList(); // <--- Data is pulled into memory here
+
+        // 2. CALCULATE: Compute Running Balance using a C# loop
+        var result = new List<TransactionStatementViewModel>();
+        decimal runningBalance = 0;
+
+        foreach (var t in rawTransactions)
+        {
+            runningBalance += t.NetChange;
+
+            result.Add(new TransactionStatementViewModel
+            {
+                TransactionID = t.TransactionID,
+                Timestamp = t.Timestamp,
+                TransactionType = t.TransactionType,
+                Amount = t.NetChange, // Shows + for Credit, - for Debit
+                Reference = t.Reference ?? "",
+                RunningBalance = runningBalance // Calculated in memory
+            });
+    }
+
+        // 3. SORT: Reverse to show "Newest First" for the UI
+        result.Reverse(); 
+
+        return result;
+        }
 
         public void DeleteCustomer(int id)
         {
@@ -211,15 +252,16 @@ namespace IBMS.Data.Services
                     })
                 ).ToList();
         }
-
-        public List<Transaction> GetAccountStatement(int accountId)
+        public List<Transaction> GetArchivedTransactions()
         {
-            // LINQ: Complex Filtering (From OR To)
+            // Returns an empty list of Transactions to satisfy the interface.
+            // (If you have a separate archive table later, you can query it here).
             return _context.Transactions
-                .Where(t => t.FromAccountID == accountId || t.ToAccountID == accountId)
-                .OrderByDescending(t => t.Timestamp)
-                .ToList();
+            .FromSqlRaw("SELECT TOP 1000 * FROM dbo.Transaction_Partitioned ORDER BY Timestamp DESC")
+            .AsNoTracking()
+            .ToList();
         }
+
 
         public List<AuditLog> GetAuditLogs() 
         {

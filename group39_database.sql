@@ -1404,6 +1404,13 @@ BEGIN
 END;
 GO
 
+CREATE PROCEDURE sp_GetArchivedTransactions
+AS
+BEGIN
+    SELECT TOP 1000 * FROM Transaction_Partitioned
+END;
+GO
+
 CREATE PROCEDURE sp_RejectLoan
     @LoanID INT,
     @RejectedBy NVARCHAR(100),

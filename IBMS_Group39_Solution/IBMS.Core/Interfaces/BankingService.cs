@@ -23,6 +23,10 @@ namespace IBMS.Core.Interfaces
 
         List<CustomerAccountSummary> GetCustomerAccountSummary(int customerId);
 
+        List<Transaction> GetArchivedTransactions();
+
+        List<TransactionStatementViewModel> GetAccountStatement(int accountId);
+
         
         void UpdateCustomer(Customer c);
         void DeleteCustomer(int id);
@@ -41,8 +45,6 @@ namespace IBMS.Core.Interfaces
         bool TransferFunds(int fromAccId, int toAccId, decimal amount, string initiatedBy);
 
         // Uses: CTE sp_GetAccountStatement vs LINQ
-        List<Transaction> GetAccountStatement(int accountId);
-
         List<Customer360ViewModel> SearchCustomersByName(string fullName);
     }
     

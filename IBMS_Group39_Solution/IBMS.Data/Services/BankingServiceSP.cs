@@ -54,6 +54,58 @@ namespace IBMS.Data.Services
 
             return customer;
         }
+        public List<Transaction> GetArchivedTransactions()
+        {
+            // This reads specifically from the 'Transaction_Partitioned' table
+            // SQL Server handles fetching from the correct year-based filegroup
+            return _context.Transactions
+                .FromSqlRaw("EXEC sp_GetArchivedTransactions")
+                .AsNoTracking() // Recommended for read-only lists to improve performance
+                .ToList();
+        }
+        public List<TransactionStatementViewModel> GetAccountStatement(int accountId)
+        {
+            var result = new List<TransactionStatementViewModel>();
+            var conn = _context.Database.GetDbConnection();
+
+            try
+            {
+                if (conn.State != ConnectionState.Open) conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    // Call the CTE Stored Procedure
+                    cmd.CommandText = "EXEC sp_GetAccountStatementWithRunningBalance @AccountID";
+                    var p = cmd.CreateParameter();
+                    p.ParameterName = "@AccountID";
+                    p.Value = accountId;
+                    cmd.Parameters.Add(p);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            result.Add(new TransactionStatementViewModel
+                            {
+                                TransactionID = reader.GetInt64(reader.GetOrdinal("TransactionID")),
+                                Timestamp = reader.GetDateTime(reader.GetOrdinal("Timestamp")),
+                                TransactionType = reader.GetString(reader.GetOrdinal("TransactionType")),
+                                Amount = reader.GetDecimal(reader.GetOrdinal("Amount")),
+                                Reference = reader.IsDBNull(reader.GetOrdinal("Reference")) ? "" : reader.GetString(reader.GetOrdinal("Reference")),
+                                
+                                // Capturing the CTE calculation
+                                RunningBalance = reader.GetDecimal(reader.GetOrdinal("RunningBalance"))
+                            });
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open) conn.Close();
+            }
+
+            return result;
+        }
 
         public List<Customer360ViewModel> GetAllCustomer360()
             => _customerRepo.GetAllCustomer360();
@@ -181,15 +233,6 @@ namespace IBMS.Data.Services
             return _customerRepo.GetCustomerAccountSummary(customerId);
         }
 
-        public List<Transaction> GetAccountStatement(int accountId)
-        {
-            // Calls the CTE-based SP 'sp_GetAccountStatement'
-            var param = new SqlParameter("@AccountID", accountId);
-
-            return _context.Transactions
-                .FromSqlRaw("EXEC sp_GetAccountStatement @AccountID", param)
-                .ToList();
-        }
 
         public List<AuditLog> GetAuditLogs()
         {

@@ -28,6 +28,7 @@ namespace IBMS.WinForms.Forms
         private Button btnDelete;
         private Button btnAccountSummary;
         private Button btnViewAuditLogs;
+        private Button btnViewArchive;
 
         private TextBox txtSearch;
         private Button btnSearch;
@@ -70,6 +71,17 @@ namespace IBMS.WinForms.Forms
             // --- 2. Action Buttons ---
             btnRefresh = new Button { Text = "Refresh List", Location = new Point(12, 90), Width = 100 };
             btnRefresh.Click += (s, e) => LoadCustomers();
+
+            btnViewArchive = new Button
+            {
+                Text = "View Archives (Partitioned)",
+                Location = new Point(330, 130), // Adjust X/Y to fit next to Audit Logs
+                Width = 180,
+                BackColor = Color.LightYellow
+            };
+            btnViewArchive.Click += BtnViewArchive_Click;
+
+            this.Controls.Add(btnViewArchive);
 
             btnTransfer = new Button { Text = "Transfer Funds", Location = new Point(120, 90), Width = 120, BackColor = Color.LightBlue };
             btnTransfer.Click += BtnTransfer_Click;
@@ -245,6 +257,24 @@ namespace IBMS.WinForms.Forms
             catch (Exception ex)
             {
                 MessageBox.Show("Error loading account summary: " + ex.Message, "Error");
+            }
+        }
+        private void BtnViewArchive_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var archivedData = _bankingService.GetArchivedTransactions();
+
+                // Simple popup grid to show data
+                Form popup = new Form { Text = "Archived Data (Partitioned Table)", Size = new Size(800, 500) };
+                DataGridView grid = new DataGridView { Dock = DockStyle.Fill, DataSource = archivedData, ReadOnly = true, AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill };
+                popup.Controls.Add(grid);
+                popup.StartPosition = FormStartPosition.CenterParent;
+                popup.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading archives: " + ex.Message);
             }
         }
 
