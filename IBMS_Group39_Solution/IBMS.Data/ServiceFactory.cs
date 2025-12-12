@@ -1,5 +1,7 @@
 using IBMS.Core.Interfaces;
-using IBMS.Data.Services; // We will create these next
+using IBMS.Data.Services;
+using IBMS.Data.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace IBMS.Data
 {
@@ -21,7 +23,12 @@ namespace IBMS.Data
                     return new BankingServiceLINQ(context);
                 
                 case ServiceType.StoredProcedure:
-                    return new BankingServiceSP(context);
+                    return new BankingServiceSP(
+                        context,
+                        new CustomerRepository(context.Database.GetDbConnection().ConnectionString)
+                        // new AccountRepository(context.Database.GetConnectionString()),
+                        // new TransactionRepository(context.Database.GetConnectionString())
+                    );
                 
                 default:
                     throw new System.ArgumentException("Invalid Service Type");

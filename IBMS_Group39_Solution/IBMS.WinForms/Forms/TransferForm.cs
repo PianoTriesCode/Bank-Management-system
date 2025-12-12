@@ -17,7 +17,7 @@ namespace IBMS.WinForms.Forms
         private ComboBox cmbRecipientCustomer;
         private ComboBox cmbRecipientAccount;
         private TextBox txtAmount;
-        private TextBox txtReference;
+        // private TextBox txtReference;
         private Button btnProcess;
         private Button btnCancel;
         private Label lblStatus;
@@ -36,7 +36,7 @@ namespace IBMS.WinForms.Forms
         private void InitializeComponent()
         {
             this.Text = "Fund Transfer";
-            this.Size = new Size(420, 380);
+            this.Size = new Size(420, 320);
             this.StartPosition = FormStartPosition.CenterParent;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -68,16 +68,16 @@ namespace IBMS.WinForms.Forms
             var lblAmt = new Label { Text = "Amount ($):", Location = new Point(20, 180), AutoSize = true };
             txtAmount = new TextBox { Location = new Point(140, 178), Width = 240 };
 
-            var lblRef = new Label { Text = "Reference:", Location = new Point(20, 220), AutoSize = true };
-            txtReference = new TextBox { Location = new Point(140, 218), Width = 240 };
+            // var lblRef = new Label { Text = "Reference:", Location = new Point(20, 220), AutoSize = true };
+            // txtReference = new TextBox { Location = new Point(140, 218), Width = 240 };
 
-            btnProcess = new Button { Text = "Transfer", Location = new Point(140, 260), Width = 100, BackColor = Color.LightGreen };
+            btnProcess = new Button { Text = "Transfer", Location = new Point(140, 220), Width = 100, BackColor = Color.LightGreen };
             btnProcess.Click += BtnProcess_Click;
 
-            btnCancel = new Button { Text = "Cancel", Location = new Point(260, 260), Width = 100 };
+            btnCancel = new Button { Text = "Cancel", Location = new Point(260, 220), Width = 100 };
             btnCancel.Click += (s, e) => this.Close();
             
-            lblStatus = new Label { Location = new Point(20, 300), Width = 360, ForeColor = Color.Red, Height = 40 };
+            lblStatus = new Label { Location = new Point(20, 260), Width = 360, ForeColor = Color.Red, Height = 40 };
             
             cmbFromAccount.Format += (s, e) => 
             {
@@ -96,8 +96,8 @@ namespace IBMS.WinForms.Forms
             this.Controls.Add(cmbRecipientAccount);
             this.Controls.Add(lblAmt);
             this.Controls.Add(txtAmount);
-            this.Controls.Add(lblRef);
-            this.Controls.Add(txtReference);
+            // this.Controls.Add(lblRef);
+            // this.Controls.Add(txtReference);
             this.Controls.Add(btnProcess);
             this.Controls.Add(btnCancel);
             this.Controls.Add(lblStatus);
@@ -173,10 +173,10 @@ namespace IBMS.WinForms.Forms
                 if (!decimal.TryParse(txtAmount.Text, out decimal amount) || amount <= 0)
                     throw new Exception("Enter a valid positive amount.");
 
-                string reference = txtReference.Text.Trim();
+                // string reference = txtReference.Text.Trim();
                 string initiatedBy = $"Employee-{_currentUser.EmployeeID}";
 
-                bool success = _bankingService.TransferFunds(fromId, toId, amount, reference);
+                bool success = _bankingService.TransferFunds(fromId, toId, amount, initiatedBy);
 
                 if (success)
                 {

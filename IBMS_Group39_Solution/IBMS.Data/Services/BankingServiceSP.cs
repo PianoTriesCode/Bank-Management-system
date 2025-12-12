@@ -12,11 +12,24 @@ namespace IBMS.Data.Services
     public class BankingServiceSP : IBankingService
     {
         private readonly BankingContext _context;
+        private readonly ICustomerRepository _customerRepo;
+        // private readonly IAccountRepository _accountRepo;
+        // private readonly ITransactionRepository _transactionRepo;
 
-        public BankingServiceSP(BankingContext context)
+
+        public BankingServiceSP(
+            BankingContext context,
+            ICustomerRepository customerRepo
+            // IAccountRepository accountRepo,
+            // ITransactionRepository transactionRepo
+            )
         {
             _context = context;
+            _customerRepo = customerRepo;
+            // _accountRepo = accountRepo;
+            // _transactionRepo = transactionRepo;
         }
+
 
         public Employee Login(int employeeId)
         {
@@ -31,24 +44,24 @@ namespace IBMS.Data.Services
                 .FirstOrDefault();
         }
 
-        public int CreateCustomer(Customer customer)
-        {
-            // Calls 'sp_CreateCustomer' with an Output parameter
-            var pFullName = new SqlParameter("@FullName", customer.FullName);
-            var pDOB = new SqlParameter("@DOB", customer.DOB);
-            var pEmail = new SqlParameter("@Email", customer.Email);
-            var pPhone = new SqlParameter("@Phone", customer.Phone);
-            var pAddress = new SqlParameter("@Address", customer.Address);
+        // public int CreateCustomer(Customer customer)
+        // {
+        //     // Calls 'sp_CreateCustomer' with an Output parameter
+        //     var pFullName = new SqlParameter("@FullName", customer.FullName);
+        //     var pDOB = new SqlParameter("@DOB", customer.DOB);
+        //     var pEmail = new SqlParameter("@Email", customer.Email);
+        //     var pPhone = new SqlParameter("@Phone", customer.Phone);
+        //     var pAddress = new SqlParameter("@Address", customer.Address);
             
-            var pNewID = new SqlParameter("@NewCustomerID", SqlDbType.Int);
-            pNewID.Direction = ParameterDirection.Output;
+        //     var pNewID = new SqlParameter("@NewCustomerID", SqlDbType.Int);
+        //     pNewID.Direction = ParameterDirection.Output;
 
-            _context.Database.ExecuteSqlRaw(
-                "EXEC sp_CreateCustomer @FullName, @DOB, @Email, @Phone, @Address, @NewCustomerID OUT",
-                pFullName, pDOB, pEmail, pPhone, pAddress, pNewID);
+        //     _context.Database.ExecuteSqlRaw(
+        //         "EXEC sp_CreateCustomer @FullName, @DOB, @Email, @Phone, @Address, @NewCustomerID OUT",
+        //         pFullName, pDOB, pEmail, pPhone, pAddress, pNewID);
 
-            return (int)pNewID.Value;
-        }
+        //     return (int)pNewID.Value;
+        // }
 
         public Customer GetCustomer(int customerId)
         {
@@ -62,6 +75,18 @@ namespace IBMS.Data.Services
 
             return customer;
         }
+
+        public List<Customer360ViewModel> GetAllCustomer360()
+            => _customerRepo.GetAllCustomer360();
+
+        public int CreateCustomer(Customer c)
+            => _customerRepo.CreateCustomer(c);
+
+        public void UpdateCustomer(Customer c)
+            => _customerRepo.UpdateCustomer(c);
+
+        public void DeleteCustomer(int id)
+            => _customerRepo.DeleteCustomer(id);
 
         public List<CustomerViewModel> GetAllCustomers()
         {
@@ -99,17 +124,6 @@ namespace IBMS.Data.Services
 
             return result;
         }
-
-        // public List<Account> GetAccountsForCustomer(int customerId)
-        // {
-        //     // Uses a Raw SQL query to filter the Account table
-        //     // Alternatively, could call 'view_ActiveAccountsByBranch' and filter
-        //     var param = new SqlParameter("@CustomerID", customerId);
-            
-        //     return _context.Accounts
-        //         .FromSqlRaw("SELECT * FROM Account WHERE CustomerID = @CustomerID", param)
-        //         .ToList();
-        // }
 
         public List<Account> GetAccountsForCustomer(int customerId)
         {

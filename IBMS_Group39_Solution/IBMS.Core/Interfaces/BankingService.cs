@@ -11,13 +11,19 @@ namespace IBMS.Core.Interfaces
 
         // --- Customer Management ---
         // Uses: sp_CreateCustomer vs EF .Add()
-        int CreateCustomer(Customer customer);
+        // int CreateCustomer(Customer customer);
         
         // Uses: sp_GetCustomerByID vs EF .Find()
         Customer GetCustomer(int customerId);
         
         // Uses: view_Customer360 vs LINQ Join
         List<CustomerViewModel> GetAllCustomers();
+
+        List<Customer360ViewModel> GetAllCustomer360();
+
+        int CreateCustomer(Customer c);
+        void UpdateCustomer(Customer c);
+        void DeleteCustomer(int id);
 
         // --- Account Management ---
         // Uses: View or LINQ Where

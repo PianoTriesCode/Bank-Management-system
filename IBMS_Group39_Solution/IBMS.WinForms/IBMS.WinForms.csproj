@@ -5,6 +5,10 @@
     <ProjectReference Include="..\IBMS.Data\IBMS.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.4" />
+  </ItemGroup>
+
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net9.0-windows</TargetFramework>

@@ -39,6 +39,30 @@ namespace IBMS.Data.Services
             return _context.Customers.Find(customerId);
         }
 
+        public List<Customer360ViewModel> GetAllCustomer360()
+        {
+            return GetAllCustomers().Select(c => new Customer360ViewModel
+            {
+                CustomerID = c.CustomerID,
+                FullName = c.FullName,
+                Email = c.Email,
+                BranchName = "",
+                Status = "",
+                TotalBalance = 0,
+                Accounts = ""
+            }).ToList();
+        }
+
+        public void UpdateCustomer(Customer c)
+        {
+            throw new NotImplementedException("LINQ mode does not support UpdateCustomer yet.");
+        }
+
+        public void DeleteCustomer(int id)
+        {
+            throw new NotImplementedException("LINQ mode does not support DeleteCustomer yet.");
+        }
+
         public List<CustomerViewModel> GetAllCustomers()
         {
             // LINQ: Projection (Select) to calculate totals in memory/query

@@ -43,6 +43,12 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
+          "dependencies": {
+            "System.Configuration.ConfigurationManager": {
+              "target": "Package",
+              "version": "[9.0.4, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -121,9 +127,13 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "Dapper": {
+              "target": "Package",
+              "version": "[2.1.66, )"
+            },
             "Microsoft.Data.SqlClient": {
               "target": "Package",
-              "version": "[5.1.5, )"
+              "version": "[6.1.3, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
@@ -145,7 +155,7 @@
             },
             "System.Configuration.ConfigurationManager": {
               "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[9.0.4, )"
             }
           },
           "imports": [

@@ -23,6 +23,10 @@ namespace IBMS.WinForms.Forms
         private Button btnRefresh;
         private Button btnTransfer;
         private Button btnStatement;
+        private Button btnAdd;
+        private Button btnEdit;
+        private Button btnDelete;
+
 
         public DashboardForm(Employee user)
         {
@@ -68,6 +72,36 @@ namespace IBMS.WinForms.Forms
             btnStatement = new Button { Text = "View Statement", Location = new Point(250, 90), Width = 120 };
             btnStatement.Click += BtnStatement_Click;
 
+            btnAdd = new Button { Text = "Add Customer", Location = new Point(380, 90), Width = 120 };
+            btnAdd.Click += (s,e)=> {
+                var f = new CustomerCrudForm(_bankingService);
+                if (f.ShowDialog() == DialogResult.OK)
+                    LoadCustomers();
+            };
+
+            btnAdd = new Button { Text = "Update Customer", Location = new Point(510, 90), Width = 120 };
+            btnEdit.Click += (s,e)=> {
+                var cust = GetSelectedCustomer();
+                if (cust == null) return;
+
+                var customerData = _bankingService.GetCustomerById(cust.CustomerID);
+                var f = new CustomerCrudForm(_bankingService, customerData);
+                if (f.ShowDialog() == DialogResult.OK)
+                    LoadCustomers();
+            };
+
+            btnAdd = new Button { Text = "Delete Customer", Location = new Point(640, 90), Width = 120 };
+            btnDelete.Click += (s,e)=> {
+                var cust = GetSelectedCustomer();
+                if (cust == null) return;
+
+                if (MessageBox.Show("Delete this customer?", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    _bankingService.DeleteCustomer(cust.CustomerID);
+                    LoadCustomers();
+                }
+            };
+
             // --- 3. Data Grid ---
             gridCustomers = new DataGridView 
             { 
@@ -108,7 +142,8 @@ namespace IBMS.WinForms.Forms
         {
             try
             {
-                var customers = _bankingService.GetAllCustomers();
+                // var customers = _bankingService.GetAllCustomers();
+                var customers = _bankingService.GetAllCustomer360();
                 gridCustomers.DataSource = customers;
             }
             catch (Exception ex)

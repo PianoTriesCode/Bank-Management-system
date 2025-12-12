@@ -28,5 +28,6 @@ namespace IBMS.Core.Models
         public string? Address { get; set; }
 
         public DateTime CreatedAt { get; set; }
+        public string? CreatedBy { get; set; }
     }
 }
