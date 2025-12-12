@@ -17,6 +17,7 @@ namespace IBMS.Data
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Branch> Branches { get; set; }
         public DbSet<AuditLog> AuditLog { get; set; }
+        public DbSet<Customer360ViewModel> Customer360ViewModels { get; set; }
 
 
         // Standard constructor
@@ -44,6 +45,12 @@ namespace IBMS.Data
 
             var entityType = modelBuilder.Entity<Customer>().Metadata;
             EntityTypeBuilder.HasTrigger(entityType, "trigger_Customer_AfterInsert");
+
+            modelBuilder.Entity<Customer360ViewModel>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView(null);
+            });
         }
     }
 }

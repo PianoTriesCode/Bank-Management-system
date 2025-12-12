@@ -1269,6 +1269,46 @@ BEGIN
 END;
 GO
 
+CREATE FUNCTION dbo.fn_SearchCustomersByName (@FullName NVARCHAR(100))
+RETURNS TABLE
+AS
+RETURN
+(
+    SELECT
+        CustomerID,
+        FullName,
+        Email,
+        Phone,
+        Address
+    FROM Customer
+    WHERE FullName LIKE '%' + @FullName + '%'
+);
+GO
+
+CREATE PROCEDURE dbo.sp_SearchCustomersByName
+    @FullName NVARCHAR(100)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        c.CustomerID,
+        c.FullName,
+        c.Email,
+        c.Phone,
+        c.Address,
+        TotalAccounts = ISNULL(acc.TotalAccounts, 0),
+        TotalBalance = ISNULL(acc.TotalBalance, 0)
+    FROM dbo.fn_SearchCustomersByName(@FullName) c
+    LEFT JOIN
+    (
+        SELECT CustomerID, COUNT(AccountID) AS TotalAccounts, SUM(Balance) AS TotalBalance
+        FROM Account
+        GROUP BY CustomerID
+    ) acc ON acc.CustomerID = c.CustomerID;
+END;
+GO
+
 -- Loan Management
 
 USE IBMS_Phase2;

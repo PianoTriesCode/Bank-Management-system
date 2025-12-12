@@ -42,6 +42,8 @@ namespace IBMS.Core.Interfaces
 
         // Uses: CTE sp_GetAccountStatement vs LINQ
         List<Transaction> GetAccountStatement(int accountId);
+
+        List<Customer360ViewModel> SearchCustomersByName(string fullName);
     }
     
     // Helper VM for the Dashboard Grid
