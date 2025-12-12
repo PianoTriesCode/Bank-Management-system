@@ -1231,6 +1231,8 @@ GO
 -- ===============================
 -- ====== Helper Functions =======
 -- ===============================
+
+-- collects and displays all audit logs
 CREATE PROCEDURE GetAllAuditLogs
 AS
 BEGIN
@@ -1247,6 +1249,7 @@ BEGIN
 END;
 GO
 
+-- Transaction history for a specific account
 CREATE PROCEDURE sp_GetAccountStatement
     @AccountID INT
 AS
@@ -1269,6 +1272,7 @@ BEGIN
 END;
 GO
 
+-- Function to help search for customers based on their FullName
 CREATE FUNCTION dbo.fn_SearchCustomersByName (@FullName NVARCHAR(100))
 RETURNS TABLE
 AS
