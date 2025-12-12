@@ -16,7 +16,6 @@ namespace IBMS.Data.Services
         // private readonly IAccountRepository _accountRepo;
         // private readonly ITransactionRepository _transactionRepo;
 
-
         public BankingServiceSP(
             BankingContext context,
             ICustomerRepository customerRepo
@@ -43,25 +42,6 @@ namespace IBMS.Data.Services
                 .AsEnumerable()
                 .FirstOrDefault();
         }
-
-        // public int CreateCustomer(Customer customer)
-        // {
-        //     // Calls 'sp_CreateCustomer' with an Output parameter
-        //     var pFullName = new SqlParameter("@FullName", customer.FullName);
-        //     var pDOB = new SqlParameter("@DOB", customer.DOB);
-        //     var pEmail = new SqlParameter("@Email", customer.Email);
-        //     var pPhone = new SqlParameter("@Phone", customer.Phone);
-        //     var pAddress = new SqlParameter("@Address", customer.Address);
-            
-        //     var pNewID = new SqlParameter("@NewCustomerID", SqlDbType.Int);
-        //     pNewID.Direction = ParameterDirection.Output;
-
-        //     _context.Database.ExecuteSqlRaw(
-        //         "EXEC sp_CreateCustomer @FullName, @DOB, @Email, @Phone, @Address, @NewCustomerID OUT",
-        //         pFullName, pDOB, pEmail, pPhone, pAddress, pNewID);
-
-        //     return (int)pNewID.Value;
-        // }
 
         public Customer GetCustomer(int customerId)
         {
@@ -216,6 +196,48 @@ namespace IBMS.Data.Services
             return _context.Transactions
                 .FromSqlRaw("EXEC sp_GetAccountStatementWithRunningBalance @AccountID", param)
                 .ToList();
+        }
+
+        public List<AuditLog> GetAuditLogs()
+        {
+            var logs = new List<AuditLog>();
+            var conn = _context.Database.GetDbConnection();
+
+            try
+            {
+                if (conn.State != ConnectionState.Open)
+                    conn.Open();
+
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "GetAllAuditLogs";
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            logs.Add(new AuditLog
+                            {
+                                AuditID = reader.GetInt64(0),
+                                EntityName = reader.GetString(1),
+                                EntityID = reader.GetString(2),
+                                Action = reader.GetString(3),
+                                PerformedBy = reader.GetString(4),
+                                Timestamp = reader.GetDateTime(5),
+                                Details = reader.IsDBNull(6) ? null : reader.GetString(6)
+                            });
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                    conn.Close();
+            }
+
+            return logs;
         }
     }
 }

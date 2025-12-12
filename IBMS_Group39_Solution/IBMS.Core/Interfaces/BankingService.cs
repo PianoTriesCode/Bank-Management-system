@@ -27,6 +27,8 @@ namespace IBMS.Core.Interfaces
         void UpdateCustomer(Customer c);
         void DeleteCustomer(int id);
 
+        List<AuditLog> GetAuditLogs();
+
         // --- Account Management ---
         // Uses: View or LINQ Where
         List<Account> GetAccountsForCustomer(int customerId);

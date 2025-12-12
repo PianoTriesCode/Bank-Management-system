@@ -1225,6 +1225,27 @@ WHERE o.name = 'Transaction_Partitioned'
 SELECT TOP 20 *
 FROM dbo.[Transaction]
 ORDER BY TransactionID DESC;
+GO
+
+
+-- ===============================
+-- ====== Helper Functions =======
+-- ===============================
+CREATE PROCEDURE GetAllAuditLogs
+AS
+BEGIN
+    SELECT 
+        AuditID,
+        EntityName,
+        EntityID,
+        Action,
+        PerformedBy,
+        Timestamp,
+        Details
+    FROM AuditLog
+    ORDER BY Timestamp DESC;
+END;
+GO
 
 -- Loan Management
 

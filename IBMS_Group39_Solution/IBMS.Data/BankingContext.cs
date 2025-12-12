@@ -14,6 +14,8 @@ namespace IBMS.Data
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Branch> Branches { get; set; }
+        public DbSet<AuditLog> AuditLog { get; set; }
+
 
         // Standard constructor
         public BankingContext()

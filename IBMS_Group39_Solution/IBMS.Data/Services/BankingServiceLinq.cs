@@ -10,12 +10,10 @@ namespace IBMS.Data.Services
     public class BankingServiceLINQ : IBankingService
     {
         private readonly BankingContext _context;
-        // private readonly ICustomerRepository _customerRepo;
 
         public BankingServiceLINQ(BankingContext context)
         {
             _context = context;
-            // _customerRepo = customerRepo;
         }
 
         public Employee Login(int employeeId)
@@ -175,6 +173,13 @@ namespace IBMS.Data.Services
             return _context.Transactions
                 .Where(t => t.FromAccountID == accountId || t.ToAccountID == accountId)
                 .OrderByDescending(t => t.Timestamp)
+                .ToList();
+        }
+
+        public List<AuditLog> GetAuditLogs()
+        {
+            return _context.AuditLog
+                .OrderByDescending(a => a.Timestamp)
                 .ToList();
         }
     }

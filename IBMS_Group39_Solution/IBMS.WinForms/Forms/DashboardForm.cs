@@ -27,6 +27,8 @@ namespace IBMS.WinForms.Forms
         private Button btnEdit;
         private Button btnDelete;
         private Button btnAccountSummary;
+        private Button btnViewAuditLogs;
+
 
         public DashboardForm(Employee user)
         {
@@ -105,10 +107,19 @@ namespace IBMS.WinForms.Forms
             btnAccountSummary = new Button
             {
                 Text = "View Account Summary",
-                Location = new Point(12, 130),  // New row, adjust Y position accordingly
+                Location = new Point(12, 130),
                 Width = 150
             };
             btnAccountSummary.Click += BtnAccountSummary_Click;
+
+            btnViewAuditLogs = new Button
+            {
+                Text = "View Audit Logs",
+                Location = new Point(170, 130),
+                Width = 150,
+                // Anchor = AnchorStyles.Bottom | AnchorStyles.Left
+            };
+            btnViewAuditLogs.Click += BtnViewAuditLogs_Click;
 
             // --- 3. Data Grid ---
             gridCustomers = new DataGridView 
@@ -131,6 +142,7 @@ namespace IBMS.WinForms.Forms
             this.Controls.Add(btnEdit);
             this.Controls.Add(btnDelete);
             this.Controls.Add(btnAccountSummary);
+            this.Controls.Add(btnViewAuditLogs);
             this.Controls.Add(gridCustomers);
         }
 
@@ -234,6 +246,12 @@ namespace IBMS.WinForms.Forms
             {
                 MessageBox.Show("Error opening statement form: " + ex.Message);
             }
+        }
+
+        private void BtnViewAuditLogs_Click(object sender, EventArgs e)
+        {
+            var auditForm = new AuditLogsForm(_bankingService);
+            auditForm.ShowDialog(this);
         }
     }
 }
