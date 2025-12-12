@@ -262,7 +262,6 @@ namespace IBMS.Data.Services
             .ToList();
         }
 
-
         public List<AuditLog> GetAuditLogs() 
         {
             return _context.AuditLog
@@ -287,6 +286,87 @@ namespace IBMS.Data.Services
                         .Sum(a => (decimal?)a.Balance) ?? 0
                 })
                 .ToList();
+        }
+
+        public List<AccountType> GetAllAccountTypes()
+        {
+            return _context.Set<AccountType>().ToList();
+        }
+
+        public List<Branch> GetAllBranches()
+        {
+            return _context.Set<Branch>().ToList();
+        }
+
+        public int CreateAccount(Account acc)
+        {
+            acc.CreatedDate = DateTime.Now;
+            _context.Accounts.Add(acc);
+
+            _context.SaveChanges();
+
+            _context.AuditLog.Add(new AuditLog {
+                EntityName = "Account",
+                EntityID = acc.AccountID.ToString(),
+                Action = "CreateAccount",
+                PerformedBy = "sa",
+                Timestamp = DateTime.Now,
+                Details = $"Creating account for Customer {acc.CustomerID}"
+            });
+
+            _context.SaveChanges();
+
+            return acc.AccountID;
+        }
+
+        public void UpdateAccount(Account acc)
+        {
+            var existing = _context.Accounts.Find(acc.AccountID);
+            if (existing == null) throw new Exception("Account not found");
+
+            existing.AccountTypeID = acc.AccountTypeID;
+            existing.BranchID = acc.BranchID;
+            existing.Balance = acc.Balance;
+            existing.Status = acc.Status;
+            existing.AccountNumber = acc.AccountNumber;
+
+            _context.AuditLog.Add(new AuditLog {
+                EntityName = "Account",
+                EntityID = acc.AccountID.ToString(),
+                Action = "UpdateAccount",
+                PerformedBy = "sa",
+                Timestamp = DateTime.Now,
+                Details = $"Updated account {acc.AccountID}"
+            });
+
+            _context.SaveChanges();
+        }
+
+        public void DeleteAccount(int accountId)
+        {
+            var acc = _context.Accounts.Find(accountId);
+            if (acc == null) throw new Exception("Account not found");
+
+            bool hasTxns = _context.Transactions
+                .Any(t => t.FromAccountID == accountId || t.ToAccountID == accountId);
+
+            if (hasTxns)
+                throw new InvalidOperationException(
+                    "This account cannot be deleted because transactions exist."
+                );
+
+            _context.Accounts.Remove(acc);
+
+            _context.AuditLog.Add(new AuditLog {
+                EntityName = "Account",
+                EntityID = accountId.ToString(),
+                Action = "DeleteAccount",
+                PerformedBy = "sa",
+                Timestamp = DateTime.Now,
+                Details = $"Deleted account {accountId}"
+            });
+
+            _context.SaveChanges();
         }
     }
 }

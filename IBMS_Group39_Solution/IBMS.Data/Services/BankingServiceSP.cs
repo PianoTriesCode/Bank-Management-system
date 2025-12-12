@@ -284,5 +284,53 @@ namespace IBMS.Data.Services
                 .FromSqlRaw("EXEC dbo.sp_SearchCustomersByName @FullName", param)
                 .ToList();
         }
+
+        public List<AccountType> GetAllAccountTypes()
+        {
+            return _context.Set<AccountType>().AsNoTracking().ToList();
+        }
+
+        public List<Branch> GetAllBranches()
+        {
+            return _context.Set<Branch>().AsNoTracking().ToList();
+        }
+
+        public int CreateAccount(Account acc)
+        {
+            var pAccountNumber = new SqlParameter("@AccountNumber", acc.AccountNumber ?? (object)DBNull.Value);
+            var pCustomerId = new SqlParameter("@CustomerID", acc.CustomerID);
+            var pAccountTypeId = new SqlParameter("@AccountTypeID", acc.AccountTypeID);
+            var pBranchId = new SqlParameter("@BranchID", acc.BranchID);
+            var pBalance = new SqlParameter("@Balance", acc.Balance);
+            var pStatus = new SqlParameter("@Status", acc.Status ?? "Active");
+
+            var pNewId = new SqlParameter("@NewAccountID", SqlDbType.Int) { Direction = ParameterDirection.Output };
+
+            _context.Database.ExecuteSqlRaw(
+                "EXEC dbo.sp_CreateAccount @AccountNumber, @CustomerID, @AccountTypeID, @BranchID, @Balance, @Status, @NewAccountID OUT",
+                pAccountNumber, pCustomerId, pAccountTypeId, pBranchId, pBalance, pStatus, pNewId);
+
+            return (int)pNewId.Value;
+        }
+
+        public void UpdateAccount(Account acc)
+        {
+            var pAccountID = new SqlParameter("@AccountID", acc.AccountID);
+            var pAccountNumber = new SqlParameter("@AccountNumber", acc.AccountNumber ?? (object)DBNull.Value);
+            var pAccountTypeID = new SqlParameter("@AccountTypeID", acc.AccountTypeID);
+            var pBranchID = new SqlParameter("@BranchID", acc.BranchID);
+            var pBalance = new SqlParameter("@Balance", acc.Balance);
+            var pStatus = new SqlParameter("@Status", acc.Status ?? "Active");
+
+            _context.Database.ExecuteSqlRaw(
+                "EXEC dbo.sp_UpdateAccount @AccountID, @AccountNumber, @AccountTypeID, @BranchID, @Balance, @Status",
+                pAccountID, pAccountNumber, pAccountTypeID, pBranchID, pBalance, pStatus);
+        }
+
+        public void DeleteAccount(int accountId)
+        {
+            var p = new SqlParameter("@AccountID", accountId);
+            _context.Database.ExecuteSqlRaw("EXEC dbo.sp_DeleteAccount @AccountID", p);
+        }
     }
 }

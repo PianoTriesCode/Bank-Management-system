@@ -29,6 +29,7 @@ namespace IBMS.WinForms.Forms
         private Button btnAccountSummary;
         private Button btnViewAuditLogs;
         private Button btnViewArchive;
+        private Button btnManageAccounts;
 
         private TextBox txtSearch;
         private Button btnSearch;
@@ -52,7 +53,7 @@ namespace IBMS.WinForms.Forms
         private void InitializeComponent()
         {
             this.Text = $"IBMS Dashboard - Logged in as: {_currentUser.FullName}";
-            this.Size = new Size(800, 650);
+            this.Size = new Size(800, 690);
             this.StartPosition = FormStartPosition.CenterScreen;
 
             // --- 1. Mode Selection (The Factory Pattern UI) ---
@@ -136,9 +137,17 @@ namespace IBMS.WinForms.Forms
             };
             btnViewAuditLogs.Click += BtnViewAuditLogs_Click;
 
+            btnManageAccounts = new Button
+            {
+                Text = "Manage Accounts",
+                Location = new Point(520, 130),
+                Width = 150
+            };
+            btnManageAccounts.Click += BtnManageAccounts_Click;
+
             txtSearch = new TextBox
             {
-                Location = new Point(470, 130),
+                Location = new Point(470, 170),
                 Width = 200
             };
             txtSearch.KeyDown += TxtSearch_KeyDown;
@@ -146,7 +155,7 @@ namespace IBMS.WinForms.Forms
             btnSearch = new Button
             {
                 Text = "Search",
-                Location = new Point(680, 130),
+                Location = new Point(680, 170),
                 Width = 80
             };
             btnSearch.Click += BtnSearch_Click;
@@ -154,7 +163,7 @@ namespace IBMS.WinForms.Forms
             // --- 3. Data Grid ---
             gridCustomers = new DataGridView 
             { 
-                Location = new Point(12, 170), 
+                Location = new Point(12, 210), 
                 Size = new Size(760, 420),
                 Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
                 AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
@@ -175,6 +184,7 @@ namespace IBMS.WinForms.Forms
             this.Controls.Add(btnViewAuditLogs);
             this.Controls.Add(txtSearch);
             this.Controls.Add(btnSearch);
+            this.Controls.Add(btnManageAccounts);
             this.Controls.Add(gridCustomers);
         }
 
@@ -302,6 +312,21 @@ namespace IBMS.WinForms.Forms
         {
             var auditForm = new AuditLogsForm(_bankingService);
             auditForm.ShowDialog(this);
+        }
+
+        private void BtnManageAccounts_Click(object sender, EventArgs e)
+        {
+            var selectedCustomer = GetSelectedCustomer();
+            if (selectedCustomer == null)
+            {
+                MessageBox.Show("Please select a customer first.", "Selection Required");
+                return;
+            }
+
+            var frm = new AccountCrudForm(_bankingService, selectedCustomer.CustomerID);
+            frm.ShowDialog();
+
+            LoadCustomers();
         }
 
         private void BtnSearch_Click(object sender, EventArgs e)

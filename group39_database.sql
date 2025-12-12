@@ -1313,6 +1313,115 @@ BEGIN
 END;
 GO
 
+IF OBJECT_ID('dbo.sp_CreateAccount', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.sp_CreateAccount;
+GO
+CREATE PROCEDURE dbo.sp_CreateAccount
+    @AccountNumber NVARCHAR(20),
+    @CustomerID INT,
+    @AccountTypeID INT,
+    @BranchID INT,
+    @Balance DECIMAL(18,2),
+    @Status NVARCHAR(20),
+    @NewAccountID INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        BEGIN TRAN;
+
+        INSERT INTO Account (AccountNumber, CustomerID, AccountTypeID, BranchID, Balance, Status, CreatedDate)
+        VALUES (@AccountNumber, @CustomerID, @AccountTypeID, @BranchID, @Balance, @Status, GETDATE());
+
+        SET @NewAccountID = SCOPE_IDENTITY();
+
+        INSERT INTO AuditLog (EntityName, EntityID, Action, PerformedBy, Timestamp, Details)
+        VALUES ('Account', CAST(@NewAccountID AS NVARCHAR(100)), 'CreateAccount', ISNULL(SUSER_SNAME(), 'SP'), GETDATE(), 'Account created via SP');
+
+        COMMIT TRAN;
+    END TRY
+    BEGIN CATCH
+        IF XACT_STATE() <> 0 ROLLBACK TRAN;
+        THROW;
+    END CATCH
+END;
+GO
+
+-- UPDATE Account
+IF OBJECT_ID('dbo.sp_UpdateAccount', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.sp_UpdateAccount;
+GO
+CREATE PROCEDURE dbo.sp_UpdateAccount
+    @AccountID INT,
+    @AccountNumber NVARCHAR(20) = NULL,
+    @AccountTypeID INT = NULL,
+    @BranchID INT = NULL,
+    @Balance DECIMAL(18,2) = NULL,
+    @Status NVARCHAR(20) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        BEGIN TRAN;
+
+        UPDATE Account
+        SET
+            AccountNumber = ISNULL(@AccountNumber, AccountNumber),
+            AccountTypeID = ISNULL(@AccountTypeID, AccountTypeID),
+            BranchID = ISNULL(@BranchID, BranchID),
+            Balance = ISNULL(@Balance, Balance),
+            Status = ISNULL(@Status, Status)
+        WHERE AccountID = @AccountID;
+
+        INSERT INTO AuditLog (EntityName, EntityID, Action, PerformedBy, Timestamp, Details)
+        VALUES ('Account', CAST(@AccountID AS NVARCHAR(100)), 'UpdateAccount', ISNULL(SUSER_SNAME(), 'SP'), GETDATE(), 'Account updated via SP');
+
+        COMMIT TRAN;
+    END TRY
+    BEGIN CATCH
+        IF XACT_STATE() <> 0 ROLLBACK TRAN;
+        THROW;
+    END CATCH
+END;
+GO
+
+-- DELETE Account
+IF OBJECT_ID('dbo.sp_DeleteAccount', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.sp_DeleteAccount;
+GO
+CREATE PROCEDURE dbo.sp_DeleteAccount
+    @AccountID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        BEGIN TRAN;
+        IF EXISTS (SELECT 1 FROM [Transaction] WHERE FromAccountID = @AccountID OR ToAccountID = @AccountID)
+        BEGIN
+            THROW 50001, 'Cannot delete account because transactions exist.', 1;
+        END
+
+        DELETE FROM Account WHERE AccountID = @AccountID;
+
+        INSERT INTO AuditLog (EntityName, EntityID, Action, PerformedBy, Timestamp, Details)
+        VALUES (
+            'Account', 
+            CAST(@AccountID AS NVARCHAR(100)), 
+            'DeleteAccount', 
+            ISNULL(SUSER_SNAME(), 'SP'), 
+            GETDATE(), 
+            'Account deleted via SP'
+        );
+
+        COMMIT TRAN;
+    END TRY
+    BEGIN CATCH
+        IF XACT_STATE() <> 0 ROLLBACK TRAN;
+        THROW;
+    END CATCH
+END;
+GO
+
 -- Loan Management
 
 USE IBMS_Phase2;
