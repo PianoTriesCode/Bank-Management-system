@@ -1,31 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Databases\\IBMS_Group39_Solution\\IBMS.Data\\IBMS.Data.csproj": {}
+    "C:\\Users\\sohaf\\Documents\\GitHub\\Bank-Management-system\\IBMS_Group39_Solution\\IBMS.Data\\IBMS.Data.csproj": {}
   },
   "projects": {
-    "E:\\Databases\\IBMS_Group39_Solution\\IBMS.Core\\IBMS.Core.csproj": {
+    "C:\\Users\\sohaf\\Documents\\GitHub\\Bank-Management-system\\IBMS_Group39_Solution\\IBMS.Core\\IBMS.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Databases\\IBMS_Group39_Solution\\IBMS.Core\\IBMS.Core.csproj",
+        "projectUniqueName": "C:\\Users\\sohaf\\Documents\\GitHub\\Bank-Management-system\\IBMS_Group39_Solution\\IBMS.Core\\IBMS.Core.csproj",
         "projectName": "IBMS.Core",
-        "projectPath": "E:\\Databases\\IBMS_Group39_Solution\\IBMS.Core\\IBMS.Core.csproj",
-        "packagesPath": "C:\\Users\\Hp\\.nuget\\packages\\",
-        "outputPath": "E:\\Databases\\IBMS_Group39_Solution\\IBMS.Core\\obj\\",
+        "projectPath": "C:\\Users\\sohaf\\Documents\\GitHub\\Bank-Management-system\\IBMS_Group39_Solution\\IBMS.Core\\IBMS.Core.csproj",
+        "packagesPath": "C:\\Users\\sohaf\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\sohaf\\Documents\\GitHub\\Bank-Management-system\\IBMS_Group39_Solution\\IBMS.Core\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Hp\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\sohaf\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -44,7 +38,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
         "net9.0": {
@@ -60,45 +54,53 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.11, 9.0.11]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[9.0.11, 9.0.11]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[9.0.11, 9.0.11]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.308/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "E:\\Databases\\IBMS_Group39_Solution\\IBMS.Data\\IBMS.Data.csproj": {
+    "C:\\Users\\sohaf\\Documents\\GitHub\\Bank-Management-system\\IBMS_Group39_Solution\\IBMS.Data\\IBMS.Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Databases\\IBMS_Group39_Solution\\IBMS.Data\\IBMS.Data.csproj",
+        "projectUniqueName": "C:\\Users\\sohaf\\Documents\\GitHub\\Bank-Management-system\\IBMS_Group39_Solution\\IBMS.Data\\IBMS.Data.csproj",
         "projectName": "IBMS.Data",
-        "projectPath": "E:\\Databases\\IBMS_Group39_Solution\\IBMS.Data\\IBMS.Data.csproj",
-        "packagesPath": "C:\\Users\\Hp\\.nuget\\packages\\",
-        "outputPath": "E:\\Databases\\IBMS_Group39_Solution\\IBMS.Data\\obj\\",
+        "projectPath": "C:\\Users\\sohaf\\Documents\\GitHub\\Bank-Management-system\\IBMS_Group39_Solution\\IBMS.Data\\IBMS.Data.csproj",
+        "packagesPath": "C:\\Users\\sohaf\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\sohaf\\Documents\\GitHub\\Bank-Management-system\\IBMS_Group39_Solution\\IBMS.Data\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Hp\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\sohaf\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "E:\\Databases\\IBMS_Group39_Solution\\IBMS.Core\\IBMS.Core.csproj": {
-                "projectPath": "E:\\Databases\\IBMS_Group39_Solution\\IBMS.Core\\IBMS.Core.csproj"
+              "C:\\Users\\sohaf\\Documents\\GitHub\\Bank-Management-system\\IBMS_Group39_Solution\\IBMS.Core\\IBMS.Core.csproj": {
+                "projectPath": "C:\\Users\\sohaf\\Documents\\GitHub\\Bank-Management-system\\IBMS_Group39_Solution\\IBMS.Core\\IBMS.Core.csproj"
               }
             }
           }
@@ -113,7 +115,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
         "net9.0": {
@@ -157,12 +159,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.11, 9.0.11]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[9.0.11, 9.0.11]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[9.0.11, 9.0.11]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.308/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

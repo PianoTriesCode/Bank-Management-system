@@ -100,14 +100,36 @@ namespace IBMS.Data.Services
             return result;
         }
 
+        // public List<Account> GetAccountsForCustomer(int customerId)
+        // {
+        //     // Uses a Raw SQL query to filter the Account table
+        //     // Alternatively, could call 'view_ActiveAccountsByBranch' and filter
+        //     var param = new SqlParameter("@CustomerID", customerId);
+            
+        //     return _context.Accounts
+        //         .FromSqlRaw("SELECT * FROM Account WHERE CustomerID = @CustomerID", param)
+        //         .ToList();
+        // }
+
         public List<Account> GetAccountsForCustomer(int customerId)
         {
-            // Uses a Raw SQL query to filter the Account table
-            // Alternatively, could call 'view_ActiveAccountsByBranch' and filter
             var param = new SqlParameter("@CustomerID", customerId);
-            
+
             return _context.Accounts
-                .FromSqlRaw("SELECT * FROM Account WHERE CustomerID = @CustomerID", param)
+                .FromSqlRaw(@"
+                    SELECT 
+                        AccountID,
+                        AccountNumber,
+                        CustomerID,
+                        AccountTypeID,
+                        BranchID,
+                        Balance,
+                        Status,
+                        CreatedDate
+                    FROM Account
+                    WHERE CustomerID = @CustomerID
+                ", param)
+                .AsNoTracking()
                 .ToList();
         }
 

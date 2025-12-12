@@ -39,33 +39,113 @@ namespace IBMS.WinForms.Forms
             this.Controls.Add(grid);
         }
 
+        // private void LoadAccounts()
+        // {
+        //     try
+        //     {
+        //         var accounts = _service.GetAccountsForCustomer(_cust.CustomerID);
+        //         if (accounts.Count == 0)
+        //         {
+        //             MessageBox.Show("No accounts found.");
+        //             this.Close();
+        //             return;
+        //         }
+        //         cmbAcc.DataSource = accounts;
+        //         cmbAcc.DisplayMember = "AccountNumber";
+        //         cmbAcc.ValueMember = "AccountID";
+        //     }
+        //     catch (Exception ex) { MessageBox.Show(ex.Message); }
+        // }
+
         private void LoadAccounts()
         {
             try
             {
                 var accounts = _service.GetAccountsForCustomer(_cust.CustomerID);
-                if (accounts.Count == 0)
+                if (accounts == null || accounts.Count == 0)
                 {
                     MessageBox.Show("No accounts found.");
                     this.Close();
                     return;
                 }
-                cmbAcc.DataSource = accounts;
+
+                // Use a BindingSource to avoid odd binding-state issues
+                var bs = new BindingSource();
+                bs.DataSource = accounts;
+
+                // Set DisplayMember and ValueMember BEFORE assigning DataSource to the ComboBox
                 cmbAcc.DisplayMember = "AccountNumber";
                 cmbAcc.ValueMember = "AccountID";
+
+                // Clear any previous binding then assign the BindingSource
+                cmbAcc.DataSource = null;
+                cmbAcc.DataSource = bs;
+
+                // Force refresh
+                cmbAcc.Refresh();
             }
-            catch (Exception ex) { MessageBox.Show(ex.Message); }
+            catch (Exception ex)
+            {
+                MessageBox.Show("LoadAccounts error: " + ex.Message);
+            }
         }
 
         private void LoadTransactions()
         {
             if (cmbAcc.SelectedValue == null) return;
+
             try
             {
-                int accId = (int)cmbAcc.SelectedValue;
-                grid.DataSource = _service.GetAccountStatement(accId);
+                object sel = cmbAcc.SelectedValue;
+
+                // Diagnostic: show the runtime type if it isn't an int or Account
+                if (sel is int accIdInt)
+                {
+                    grid.DataSource = _service.GetAccountStatement(accIdInt);
+                    return;
+                }
+
+                if (sel is long accIdLong) // in case it's long/BigInt
+                {
+                    grid.DataSource = _service.GetAccountStatement(Convert.ToInt32(accIdLong));
+                    return;
+                }
+
+                if (sel is Account accObj)
+                {
+                    grid.DataSource = _service.GetAccountStatement(accObj.AccountID);
+                    return;
+                }
+
+                // Final attempt: try to convert it (handles boxed numeric types or string numbers)
+                try
+                {
+                    int accId = Convert.ToInt32(sel);
+                    grid.DataSource = _service.GetAccountStatement(accId);
+                    return;
+                }
+                catch
+                {
+                    MessageBox.Show("Unexpected SelectedValue type: " + (sel?.GetType().FullName ?? "null")
+                                    + "\nValue.ToString(): " + (sel?.ToString() ?? "null"));
+                    return;
+                }
             }
-            catch (Exception ex) { MessageBox.Show(ex.Message); }
+            catch (Exception ex)
+            {
+                MessageBox.Show("LoadTransactions error: " + ex.Message);
+            }
         }
+
+        // private void LoadTransactions()
+        // {
+        //     if (cmbAcc.SelectedValue == null) return;
+        //     try
+        //     {
+        //         int accId = (int)cmbAcc.SelectedValue;
+        //         grid.DataSource = _service.GetAccountStatement(accId);
+        //     }
+        //     catch (Exception ex) { MessageBox.Show(ex.Message); }
+        // }
     }
 }

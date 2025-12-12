@@ -22,3 +22,15 @@ E:\Databases\IBMS_Group39_Solution\IBMS.Core\obj\Debug\net9.0\IBMS.Core.dll
 E:\Databases\IBMS_Group39_Solution\IBMS.Core\obj\Debug\net9.0\refint\IBMS.Core.dll
 E:\Databases\IBMS_Group39_Solution\IBMS.Core\obj\Debug\net9.0\IBMS.Core.pdb
 E:\Databases\IBMS_Group39_Solution\IBMS.Core\obj\Debug\net9.0\ref\IBMS.Core.dll
+C:\Users\sohaf\Documents\GitHub\Bank-Management-system\IBMS_Group39_Solution\IBMS.Core\bin\Debug\net9.0\IBMS.Core.deps.json
+C:\Users\sohaf\Documents\GitHub\Bank-Management-system\IBMS_Group39_Solution\IBMS.Core\bin\Debug\net9.0\IBMS.Core.dll
+C:\Users\sohaf\Documents\GitHub\Bank-Management-system\IBMS_Group39_Solution\IBMS.Core\bin\Debug\net9.0\IBMS.Core.pdb
+C:\Users\sohaf\Documents\GitHub\Bank-Management-system\IBMS_Group39_Solution\IBMS.Core\obj\Debug\net9.0\IBMS.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\sohaf\Documents\GitHub\Bank-Management-system\IBMS_Group39_Solution\IBMS.Core\obj\Debug\net9.0\IBMS.Core.AssemblyInfoInputs.cache
+C:\Users\sohaf\Documents\GitHub\Bank-Management-system\IBMS_Group39_Solution\IBMS.Core\obj\Debug\net9.0\IBMS.Core.AssemblyInfo.cs
+C:\Users\sohaf\Documents\GitHub\Bank-Management-system\IBMS_Group39_Solution\IBMS.Core\obj\Debug\net9.0\IBMS.Core.csproj.CoreCompileInputs.cache
+C:\Users\sohaf\Documents\GitHub\Bank-Management-system\IBMS_Group39_Solution\IBMS.Core\obj\Debug\net9.0\IBMS.Core.sourcelink.json
+C:\Users\sohaf\Documents\GitHub\Bank-Management-system\IBMS_Group39_Solution\IBMS.Core\obj\Debug\net9.0\IBMS.Core.dll
+C:\Users\sohaf\Documents\GitHub\Bank-Management-system\IBMS_Group39_Solution\IBMS.Core\obj\Debug\net9.0\refint\IBMS.Core.dll
+C:\Users\sohaf\Documents\GitHub\Bank-Management-system\IBMS_Group39_Solution\IBMS.Core\obj\Debug\net9.0\IBMS.Core.pdb
+C:\Users\sohaf\Documents\GitHub\Bank-Management-system\IBMS_Group39_Solution\IBMS.Core\obj\Debug\net9.0\ref\IBMS.Core.dll
