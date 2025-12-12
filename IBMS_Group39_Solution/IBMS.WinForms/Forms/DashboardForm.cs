@@ -50,9 +50,9 @@ namespace IBMS.WinForms.Forms
             this.StartPosition = FormStartPosition.CenterScreen;
 
             // --- 1. Mode Selection (The Factory Pattern UI) ---
-            grpMode = new GroupBox { Text = "Business Logic Mode", Location = new Point(12, 12), Size = new Size(300, 60) };
+            grpMode = new GroupBox { Text = "Business Logic Mode", Location = new Point(12, 12), Size = new Size(320, 60) };
             rbLinq = new RadioButton { Text = "LINQ / Entity Framework", Location = new Point(15, 25), AutoSize = true };
-            rbSP = new RadioButton { Text = "Stored Procedures", Location = new Point(160, 25), AutoSize = true };
+            rbSP = new RadioButton { Text = "Stored Procedures", Location = new Point(180, 25), AutoSize = true };
             
             rbLinq.CheckedChanged += (s, e) => SetServiceMode();
             rbSP.CheckedChanged += (s, e) => SetServiceMode();
@@ -60,7 +60,7 @@ namespace IBMS.WinForms.Forms
             grpMode.Controls.Add(rbLinq);
             grpMode.Controls.Add(rbSP);
 
-            lblModeStatus = new Label { Text = "Current Mode: LINQ", Location = new Point(330, 35), AutoSize = true, Font = new Font(this.Font, FontStyle.Bold) };
+            lblModeStatus = new Label { Text = "Current Mode: LINQ", Location = new Point(350, 35), AutoSize = true, Font = new Font(this.Font, FontStyle.Bold) };
 
             // --- 2. Action Buttons ---
             btnRefresh = new Button { Text = "Refresh List", Location = new Point(12, 90), Width = 100 };
@@ -145,8 +145,8 @@ namespace IBMS.WinForms.Forms
         {
             try
             {
-                var customers = _bankingService.GetAllCustomers();
-                // var customers = _bankingService.GetAllCustomer360();
+                // var customers = _bankingService.GetAllCustomers();
+                var customers = _bankingService.GetAllCustomer360();
                 gridCustomers.DataSource = customers;
             }
             catch (Exception ex)
