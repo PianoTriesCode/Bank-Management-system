@@ -13,20 +13,14 @@ namespace IBMS.Data.Services
     {
         private readonly BankingContext _context;
         private readonly ICustomerRepository _customerRepo;
-        // private readonly IAccountRepository _accountRepo;
-        // private readonly ITransactionRepository _transactionRepo;
 
         public BankingServiceSP(
             BankingContext context,
             ICustomerRepository customerRepo
-            // IAccountRepository accountRepo,
-            // ITransactionRepository transactionRepo
             )
         {
             _context = context;
             _customerRepo = customerRepo;
-            // _accountRepo = accountRepo;
-            // _transactionRepo = transactionRepo;
         }
 
         public Employee Login(int employeeId)
@@ -42,6 +36,7 @@ namespace IBMS.Data.Services
                 .FirstOrDefault();
         }
 
+        // Gets the data for a specific customer
         public Customer GetCustomer(int customerId)
         {
             // Calls 'sp_GetCustomerByID'
@@ -55,18 +50,23 @@ namespace IBMS.Data.Services
             return customer;
         }
 
+        // Uses the 360 view defined in our SQL file as the basis for results that are displayed.
         public List<Customer360ViewModel> GetAllCustomer360()
             => _customerRepo.GetAllCustomer360();
 
+        // Calls the stored procedure to create a customer
         public int CreateCustomer(Customer c)
             => _customerRepo.CreateCustomer(c);
 
+        // Calls the stored procedure to update a customer
         public void UpdateCustomer(Customer c)
             => _customerRepo.UpdateCustomer(c);
 
+        // Calls the stored procedure to delete a customer
         public void DeleteCustomer(int id)
             => _customerRepo.DeleteCustomer(id);
 
+        // 
         public List<CustomerViewModel> GetAllCustomers()
         {
             var result = new List<CustomerViewModel>();
