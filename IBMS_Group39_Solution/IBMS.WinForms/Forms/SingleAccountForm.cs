@@ -18,6 +18,7 @@ namespace IBMS.WinForms.Forms
 
         private Button btnSave;
         private Button btnCancel;
+        private TextBox txtAccountNumber;
 
         public SingleAccountForm(IBankingService service, int customerId, Account? existing = null)
         {
@@ -34,8 +35,10 @@ namespace IBMS.WinForms.Forms
 
         private void InitializeComponent()
         {
+            
             this.Text = _existing == null ? "Add Account" : "Edit Account";
             this.Size = new Size(400, 350);
+            
 
             cmbAccountType = new ComboBox { Location = new Point(20, 20), Width = 220 };
             cmbBranch = new ComboBox { Location = new Point(20, 60), Width = 220 };
@@ -45,6 +48,9 @@ namespace IBMS.WinForms.Forms
 
             btnSave = new Button { Text = "Save", Location = new Point(20, 190), Width = 100 };
             btnCancel = new Button { Text = "Cancel", Location = new Point(150, 190), Width = 100 };
+
+            txtAccountNumber = new TextBox { Location = new Point(20, 180), Width = 220, PlaceholderText = "Account Number" };
+            this.Controls.Add(txtAccountNumber);
 
             btnSave.Click += BtnSave_Click;
             btnCancel.Click += (s, e) => DialogResult = DialogResult.Cancel;
@@ -87,6 +93,7 @@ namespace IBMS.WinForms.Forms
             acc.BranchID = (int)cmbBranch.SelectedValue;
             acc.Balance = decimal.TryParse(txtBalance.Text, out var b) ? b : 0;
             acc.Status = cmbStatus.SelectedItem?.ToString() ?? "Active";
+            acc.AccountNumber = txtAccountNumber.Text;
 
             if (isEdit)
                 _service.UpdateAccount(acc);

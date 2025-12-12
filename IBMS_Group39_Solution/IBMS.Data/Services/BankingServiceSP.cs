@@ -330,7 +330,13 @@ namespace IBMS.Data.Services
         public void DeleteAccount(int accountId)
         {
             var p = new SqlParameter("@AccountID", accountId);
-            _context.Database.ExecuteSqlRaw("EXEC dbo.sp_DeleteAccount @AccountID", p);
+            try {
+                _context.Database.ExecuteSqlRaw("EXEC dbo.sp_DeleteAccount @AccountID", p);
+            }
+            catch (SqlException ex) when (ex.Number == 547) // 547 is FK violation
+            {
+                throw new InvalidOperationException("Cannot delete account: It has existing transactions.");
+            }
         }
     }
 }
