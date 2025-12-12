@@ -232,5 +232,14 @@ namespace IBMS.Data.Services
 
             return logs;
         }
+
+        public List<Customer360ViewModel> SearchCustomersByName(string fullName)
+        {
+            var param = new SqlParameter("@FullName", fullName ?? "");
+
+            return _context.Customer360ViewModels
+                .FromSqlRaw("EXEC dbo.sp_SearchCustomersByName @FullName", param)
+                .ToList();
+        }
     }
 }

@@ -227,5 +227,24 @@ namespace IBMS.Data.Services
                 .OrderByDescending(a => a.Timestamp)
                 .ToList();
         }
+
+        public List<Customer360ViewModel> SearchCustomersByName(string fullName)
+        {
+            return _context.Customers
+                .Where(c => c.FullName.Contains(fullName))
+                .Select(c => new Customer360ViewModel
+                {
+                    CustomerID = c.CustomerID,
+                    FullName = c.FullName,
+                    Email = c.Email,
+                    Phone = c.Phone,
+                    Address = c.Address,
+                    TotalAccounts = _context.Accounts.Count(a => a.CustomerID == c.CustomerID),
+                    TotalBalance = _context.Accounts
+                        .Where(a => a.CustomerID == c.CustomerID)
+                        .Sum(a => (decimal?)a.Balance) ?? 0
+                })
+                .ToList();
+        }
     }
 }

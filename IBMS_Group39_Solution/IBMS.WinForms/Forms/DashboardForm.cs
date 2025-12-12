@@ -29,6 +29,9 @@ namespace IBMS.WinForms.Forms
         private Button btnAccountSummary;
         private Button btnViewAuditLogs;
 
+        private TextBox txtSearch;
+        private Button btnSearch;
+
 
         public DashboardForm(Employee user)
         {
@@ -121,6 +124,21 @@ namespace IBMS.WinForms.Forms
             };
             btnViewAuditLogs.Click += BtnViewAuditLogs_Click;
 
+            txtSearch = new TextBox
+            {
+                Location = new Point(470, 130),
+                Width = 200
+            };
+            txtSearch.KeyDown += TxtSearch_KeyDown;
+
+            btnSearch = new Button
+            {
+                Text = "Search",
+                Location = new Point(680, 130),
+                Width = 80
+            };
+            btnSearch.Click += BtnSearch_Click;
+
             // --- 3. Data Grid ---
             gridCustomers = new DataGridView 
             { 
@@ -143,6 +161,8 @@ namespace IBMS.WinForms.Forms
             this.Controls.Add(btnDelete);
             this.Controls.Add(btnAccountSummary);
             this.Controls.Add(btnViewAuditLogs);
+            this.Controls.Add(txtSearch);
+            this.Controls.Add(btnSearch);
             this.Controls.Add(gridCustomers);
         }
 
@@ -252,6 +272,44 @@ namespace IBMS.WinForms.Forms
         {
             var auditForm = new AuditLogsForm(_bankingService);
             auditForm.ShowDialog(this);
+        }
+
+        private void BtnSearch_Click(object sender, EventArgs e)
+        {
+            FilterCustomers(txtSearch.Text.Trim());
+        }
+
+        private void TxtSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                FilterCustomers(txtSearch.Text.Trim());
+            }
+        }
+
+        private void FilterCustomers(string fullName)
+        {
+            try
+            {
+                List<Customer360ViewModel> filteredCustomers;
+
+                if (string.IsNullOrWhiteSpace(fullName))
+                {
+                    filteredCustomers = _bankingService.GetAllCustomer360();
+                }
+                else
+                {
+                    filteredCustomers = _bankingService.SearchCustomersByName(fullName);
+                }
+
+                gridCustomers.DataSource = filteredCustomers;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error during search: {ex.Message}", "Error");
+            }
         }
     }
 }
