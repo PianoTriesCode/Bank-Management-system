@@ -201,6 +201,11 @@ namespace IBMS.Data.Services
             }
         }
 
+        public List<CustomerAccountSummary> GetCustomerAccountSummary(int customerId)
+        {
+            return _customerRepo.GetCustomerAccountSummary(customerId);
+        }
+
         public List<Transaction> GetAccountStatement(int accountId)
         {
             // Calls the CTE-based SP 'sp_GetAccountStatementWithRunningBalance'

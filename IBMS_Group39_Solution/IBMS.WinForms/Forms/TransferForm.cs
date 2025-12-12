@@ -10,7 +10,7 @@ namespace IBMS.WinForms.Forms
     {
         private IBankingService _bankingService;
         private Employee _currentUser;
-        private CustomerViewModel _selectedCustomer; 
+        private Customer360ViewModel _selectedCustomer; 
 
         private Label lblHeader;
         private ComboBox cmbFromAccount;
@@ -26,7 +26,7 @@ namespace IBMS.WinForms.Forms
         {
             _bankingService = service;
             _currentUser = user;
-            _selectedCustomer = selectedCustomerObj as CustomerViewModel;
+            _selectedCustomer = selectedCustomerObj as Customer360ViewModel;
 
             InitializeComponent();
             LoadAccounts();

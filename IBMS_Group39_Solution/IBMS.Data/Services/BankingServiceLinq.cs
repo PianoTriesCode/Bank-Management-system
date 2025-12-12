@@ -10,10 +10,12 @@ namespace IBMS.Data.Services
     public class BankingServiceLINQ : IBankingService
     {
         private readonly BankingContext _context;
+        // private readonly ICustomerRepository _customerRepo;
 
         public BankingServiceLINQ(BankingContext context)
         {
             _context = context;
+            // _customerRepo = customerRepo;
         }
 
         public Employee Login(int employeeId)
@@ -145,6 +147,26 @@ namespace IBMS.Data.Services
                     return false;
                 }
             }
+        }
+
+        public List<CustomerAccountSummary> GetCustomerAccountSummary(int customerId)
+        {
+            return _context.Customers
+                .Where(c => c.CustomerID == customerId)
+                .SelectMany(c => _context.Accounts.Where(a => a.CustomerID == c.CustomerID)
+                    .Select(a => new CustomerAccountSummary
+                    {
+                        CustomerID = c.CustomerID,
+                        FullName = c.FullName,
+                        Email = c.Email,
+                        Phone = c.Phone,
+                        Address = c.Address,
+                        AccountID = a.AccountID,
+                        AccountNumber = a.AccountNumber,
+                        AccountTypeID = a.AccountTypeID,
+                        Balance = a.Balance
+                    })
+                ).ToList();
         }
 
         public List<Transaction> GetAccountStatement(int accountId)

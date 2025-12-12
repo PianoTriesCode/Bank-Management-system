@@ -9,11 +9,11 @@ namespace IBMS.WinForms.Forms
     public class StatementForm : Form
     {
         private IBankingService _service;
-        private CustomerViewModel _cust;
+        private Customer360ViewModel _cust;
         private ComboBox cmbAcc;
         private DataGridView grid;
 
-        public StatementForm(IBankingService s, CustomerViewModel c)
+        public StatementForm(IBankingService s, Customer360ViewModel c)
         {
             _service = s; 
             _cust = c;

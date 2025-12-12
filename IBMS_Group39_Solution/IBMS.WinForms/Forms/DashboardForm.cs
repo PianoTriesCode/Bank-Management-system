@@ -26,7 +26,7 @@ namespace IBMS.WinForms.Forms
         private Button btnAdd;
         private Button btnEdit;
         private Button btnDelete;
-
+        private Button btnAccountSummary;
 
         public DashboardForm(Employee user)
         {
@@ -102,10 +102,18 @@ namespace IBMS.WinForms.Forms
                 }
             };
 
+            btnAccountSummary = new Button
+            {
+                Text = "View Account Summary",
+                Location = new Point(12, 130),  // New row, adjust Y position accordingly
+                Width = 150
+            };
+            btnAccountSummary.Click += BtnAccountSummary_Click;
+
             // --- 3. Data Grid ---
             gridCustomers = new DataGridView 
             { 
-                Location = new Point(12, 130), 
+                Location = new Point(12, 170), 
                 Size = new Size(760, 420),
                 Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
                 AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
@@ -122,6 +130,7 @@ namespace IBMS.WinForms.Forms
             this.Controls.Add(btnAdd);
             this.Controls.Add(btnEdit);
             this.Controls.Add(btnDelete);
+            this.Controls.Add(btnAccountSummary);
             this.Controls.Add(gridCustomers);
         }
 
@@ -155,10 +164,11 @@ namespace IBMS.WinForms.Forms
             }
         }
 
-        private CustomerViewModel? GetSelectedCustomer()
+        private Customer360ViewModel? GetSelectedCustomer()
         {
             if (gridCustomers.SelectedRows.Count == 0) return null;
-            return gridCustomers.SelectedRows[0].DataBoundItem as CustomerViewModel;
+            // return gridCustomers.SelectedRows[0].DataBoundItem as CustomerViewModel;
+            return gridCustomers.SelectedRows[0].DataBoundItem as Customer360ViewModel;
         }
 
         private void BtnTransfer_Click(object sender, EventArgs e)
@@ -182,6 +192,30 @@ namespace IBMS.WinForms.Forms
             }
         }
 
+        private void BtnAccountSummary_Click(object sender, EventArgs e)
+        {
+            var selectedCustomer = GetSelectedCustomer();
+            if (selectedCustomer == null)
+            {
+                MessageBox.Show("Please select a customer first.", "Selection Required");
+                return;
+            }
+
+            try
+            {
+                // Call the new service method to get the summary
+                var summary = _bankingService.GetCustomerAccountSummary(selectedCustomer.CustomerID);
+
+                // Show results in a new form or message box
+                var summaryForm = new AccountSummaryForm(summary);
+                summaryForm.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading account summary: " + ex.Message, "Error");
+            }
+        }
+
         private void BtnStatement_Click(object sender, EventArgs e)
         {
             var customer = GetSelectedCustomer();
@@ -193,7 +227,6 @@ namespace IBMS.WinForms.Forms
 
             try
             {
-                // Ensure StatementForm is instantiated correctly
                 var stmtForm = new StatementForm(_bankingService, customer);
                 stmtForm.ShowDialog();
             }
