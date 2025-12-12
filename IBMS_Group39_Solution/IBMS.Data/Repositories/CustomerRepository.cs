@@ -43,7 +43,7 @@ namespace IBMS.Data.Repositories
                 p.Add("@Email", c.Email);
                 p.Add("@Phone", c.Phone);
                 p.Add("@Address", c.Address);
-                p.Add("@CreatedBy", c.CreatedBy);
+                // p.Add("@CreatedBy", c.CreatedBy);
                 p.Add("@NewCustomerID", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
                 db.Execute("sp_CreateCustomer", p, commandType: CommandType.StoredProcedure);

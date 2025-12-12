@@ -41,16 +41,20 @@ namespace IBMS.Data.Services
 
         public List<Customer360ViewModel> GetAllCustomer360()
         {
-            return GetAllCustomers().Select(c => new Customer360ViewModel
-            {
-                CustomerID = c.CustomerID,
-                FullName = c.FullName,
-                Email = c.Email,
-                BranchName = "",
-                Status = "",
-                TotalBalance = 0,
-                Accounts = ""
-            }).ToList();
+            return _context.Customers
+                .Select(c => new Customer360ViewModel
+                {
+                    CustomerID = c.CustomerID,
+                    FullName = c.FullName,
+                    Email = c.Email,
+                    Phone = c.Phone,
+                    Address = c.Address,
+                    TotalAccounts = _context.Accounts.Count(a => a.CustomerID == c.CustomerID),
+                    TotalBalance = _context.Accounts
+                        .Where(a => a.CustomerID == c.CustomerID)
+                        .Sum(a => (decimal?)a.Balance) ?? 0
+                })
+                .ToList();
         }
 
         public void UpdateCustomer(Customer c)

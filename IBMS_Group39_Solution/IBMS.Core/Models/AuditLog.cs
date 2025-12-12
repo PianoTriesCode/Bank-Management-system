@@ -24,7 +24,7 @@ namespace IBMS.Core.Models
 
         [Required]
         [MaxLength(100)]
-        public string PerformedBy { get; set; }
+        public string? PerformedBy { get; set; }
 
         public DateTime Timestamp { get; set; }
         public string? Details { get; set; }

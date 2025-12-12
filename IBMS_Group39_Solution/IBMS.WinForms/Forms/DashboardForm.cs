@@ -79,18 +79,18 @@ namespace IBMS.WinForms.Forms
                     LoadCustomers();
             };
 
-            btnAdd = new Button { Text = "Update Customer", Location = new Point(510, 90), Width = 120 };
+            btnEdit = new Button { Text = "Update Customer", Location = new Point(510, 90), Width = 120 };
             btnEdit.Click += (s,e)=> {
                 var cust = GetSelectedCustomer();
                 if (cust == null) return;
 
-                var customerData = _bankingService.GetCustomerById(cust.CustomerID);
+                var customerData = _bankingService.GetCustomer(cust.CustomerID);
                 var f = new CustomerCrudForm(_bankingService, customerData);
                 if (f.ShowDialog() == DialogResult.OK)
                     LoadCustomers();
             };
 
-            btnAdd = new Button { Text = "Delete Customer", Location = new Point(640, 90), Width = 120 };
+            btnDelete = new Button { Text = "Delete Customer", Location = new Point(640, 90), Width = 120 };
             btnDelete.Click += (s,e)=> {
                 var cust = GetSelectedCustomer();
                 if (cust == null) return;
@@ -119,6 +119,9 @@ namespace IBMS.WinForms.Forms
             this.Controls.Add(btnRefresh);
             this.Controls.Add(btnTransfer);
             this.Controls.Add(btnStatement);
+            this.Controls.Add(btnAdd);
+            this.Controls.Add(btnEdit);
+            this.Controls.Add(btnDelete);
             this.Controls.Add(gridCustomers);
         }
 
@@ -142,8 +145,8 @@ namespace IBMS.WinForms.Forms
         {
             try
             {
-                // var customers = _bankingService.GetAllCustomers();
-                var customers = _bankingService.GetAllCustomer360();
+                var customers = _bankingService.GetAllCustomers();
+                // var customers = _bankingService.GetAllCustomer360();
                 gridCustomers.DataSource = customers;
             }
             catch (Exception ex)

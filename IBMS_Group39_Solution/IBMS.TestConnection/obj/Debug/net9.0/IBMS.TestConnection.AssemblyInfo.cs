@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IBMS.TestConnection")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b5ee680b676eca112f39609a96a9593e32468c6d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d5c53654008aeda098ffa8caabfc0059f11d2e6d")]
 [assembly: System.Reflection.AssemblyProductAttribute("IBMS.TestConnection")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IBMS.TestConnection")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

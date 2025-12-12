@@ -21,6 +21,6 @@ namespace IBMS.Core.Models
         public DateTime? EndDate { get; set; }
 
         [MaxLength(20)]
-        public string Status { get; set; }
+        public string? Status { get; set; }
     }
 }

@@ -26,6 +26,7 @@ namespace IBMS.WinForms.Forms
             if (!_isEdit) return;
 
             txtName.Text = _customer.FullName;
+            dtpDOB.Value = _customer.DOB != default(DateTime) ? _customer.DOB : DateTime.Today;
             txtEmail.Text = _customer.Email;
             txtPhone.Text = _customer.Phone;
             txtAddress.Text = _customer.Address;
@@ -34,6 +35,7 @@ namespace IBMS.WinForms.Forms
         private void btnSave_Click(object sender, EventArgs e)
         {
             _customer.FullName = txtName.Text;
+            _customer.DOB = dtpDOB.Value;
             _customer.Email = txtEmail.Text;
             _customer.Phone = txtPhone.Text;
             _customer.Address = txtAddress.Text;
