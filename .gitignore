@@ -1,0 +1,4 @@
+# Ignore compiled binaries and debug symbols
+*.dll
+*.pdb
+*.cache
