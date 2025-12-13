@@ -46,6 +46,11 @@ namespace IBMS.Core.Interfaces
 
         // Uses: CTE sp_GetAccountStatement vs LINQ
         List<Customer360ViewModel> SearchCustomersByName(string fullName);
+
+        int SaveLoanApplication(Loan loan);
+        List<int> GetCustomerAccountIds(int customerId);
+        List<Loan> GetAllLoans();
+        int UpdateLoanApplication(int loanId, LoanStatus loanStatus);
     }
     
     // Helper VM for the Dashboard Grid

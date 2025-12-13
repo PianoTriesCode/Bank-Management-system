@@ -35,6 +35,15 @@ namespace IBMS.Data.Repositories
             }
         }
 
+        public List<int> GetCustomerAccountIds(int customerId)
+        {
+            using (var db = Conn)
+            {
+                string sql = "SELECT AccountID FROM dbo.func_CustomerSummary(@CustomerID)";
+                return db.Query<int>(sql, new { CustomerID = customerId }).ToList();
+            }
+        }
+
         public Customer GetById(int id)
         {
             string sql = "SELECT * FROM Customers WHERE CustomerID = @id";

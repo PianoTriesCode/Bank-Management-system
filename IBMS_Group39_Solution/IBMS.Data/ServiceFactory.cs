@@ -25,9 +25,8 @@ namespace IBMS.Data
                 case ServiceType.StoredProcedure:
                     return new BankingServiceSP(
                         context,
-                        new CustomerRepository(context.Database.GetDbConnection().ConnectionString)
-                        // new AccountRepository(context.Database.GetConnectionString()),
-                        // new TransactionRepository(context.Database.GetConnectionString())
+                        new CustomerRepository(context.Database.GetDbConnection().ConnectionString),
+                        new LoanRepository(context.Database.GetDbConnection().ConnectionString)
                     );
                 
                 default:

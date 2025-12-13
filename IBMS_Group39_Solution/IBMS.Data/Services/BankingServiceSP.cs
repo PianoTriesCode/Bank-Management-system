@@ -14,13 +14,17 @@ namespace IBMS.Data.Services
         private readonly BankingContext _context;
         private readonly ICustomerRepository _customerRepo;
 
+        private readonly ILoanRepository _loanRepo;
+
         public BankingServiceSP(
             BankingContext context,
-            ICustomerRepository customerRepo
+            ICustomerRepository customerRepo,
+            ILoanRepository loanRepo
             )
         {
             _context = context;
             _customerRepo = customerRepo;
+            _loanRepo = loanRepo;
         }
 
         public Employee Login(int employeeId)
@@ -283,6 +287,29 @@ namespace IBMS.Data.Services
             return _context.Customer360ViewModels
                 .FromSqlRaw("EXEC dbo.sp_SearchCustomersByName @FullName", param)
                 .ToList();
+        }
+
+        public int SaveLoanApplication(Loan loan)
+        {
+            return _loanRepo.SaveLoanApplication(loan);
+        }
+
+        public List<int> GetCustomerAccountIds(int customerId)
+        {
+            return _customerRepo.GetCustomerAccountIds(customerId);
+        }
+
+        public List<Loan> GetAllLoans()
+        {
+            return _loanRepo.GetAllLoans();
+        }
+
+        public int UpdateLoanApplication(int loanId, LoanStatus loanStatus)
+        { 
+            var loan = _context.Loans.FirstOrDefault(l => l.LoanID == loanId);
+            if (loan == null) return 0;
+            loan.StatusEnum = loanStatus;
+            return _loanRepo.UpdateLoanById(loan);
         }
     }
 }

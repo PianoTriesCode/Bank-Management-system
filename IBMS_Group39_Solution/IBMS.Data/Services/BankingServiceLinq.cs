@@ -252,6 +252,14 @@ namespace IBMS.Data.Services
                     })
                 ).ToList();
         }
+
+        public List<int> GetCustomerAccountIds(int customerId)
+        {
+            return _context.Accounts
+                .Where(a => a.CustomerID == customerId)
+                .Select(a => a.AccountID)
+                .ToList();
+        }        
         public List<Transaction> GetArchivedTransactions()
         {
             // Returns an empty list of Transactions to satisfy the interface.
@@ -287,6 +295,26 @@ namespace IBMS.Data.Services
                         .Sum(a => (decimal?)a.Balance) ?? 0
                 })
                 .ToList();
+        }
+
+        public int SaveLoanApplication(Loan loan)
+        {
+            _context.Loans.Add(loan);
+            _context.SaveChanges();
+            return 0;
+        }
+
+        public int UpdateLoanApplication(int loanId, LoanStatus statusEnum)
+        {
+            var loan = _context.Loans.FirstOrDefault(l => l.LoanID == loanId);
+            if (loan == null) return 0;
+            loan.StatusEnum = statusEnum;
+            return _context.SaveChanges();
+        }
+
+        public List<Loan> GetAllLoans()
+        {
+            return _context.Loans.ToList();
         }
     }
 }

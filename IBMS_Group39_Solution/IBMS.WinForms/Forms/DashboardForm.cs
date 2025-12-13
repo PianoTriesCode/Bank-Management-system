@@ -33,6 +33,9 @@ namespace IBMS.WinForms.Forms
         private TextBox txtSearch;
         private Button btnSearch;
 
+        private Button btnLoanApplication;
+        private Button btnViewLoans;
+
 
         public DashboardForm(Employee user)
         {
@@ -72,17 +75,6 @@ namespace IBMS.WinForms.Forms
             btnRefresh = new Button { Text = "Refresh List", Location = new Point(12, 90), Width = 100 };
             btnRefresh.Click += (s, e) => LoadCustomers();
 
-            btnViewArchive = new Button
-            {
-                Text = "View Archives (Partitioned)",
-                Location = new Point(330, 130), // Adjust X/Y to fit next to Audit Logs
-                Width = 180,
-                BackColor = Color.LightYellow
-            };
-            btnViewArchive.Click += BtnViewArchive_Click;
-
-            this.Controls.Add(btnViewArchive);
-
             btnTransfer = new Button { Text = "Transfer Funds", Location = new Point(120, 90), Width = 120, BackColor = Color.LightBlue };
             btnTransfer.Click += BtnTransfer_Click;
 
@@ -119,6 +111,16 @@ namespace IBMS.WinForms.Forms
                 }
             };
 
+            btnLoanApplication = new Button
+            {
+                Text = "Apply for Loan",
+                Location = new Point(12, 170),
+                Width = 120,
+                BackColor = Color.LightGreen,
+                Font = new Font(this.Font, FontStyle.Bold)
+            };
+            btnLoanApplication.Click += BtnLoanApplication_Click;
+
             btnAccountSummary = new Button
             {
                 Text = "View Account Summary",
@@ -131,22 +133,40 @@ namespace IBMS.WinForms.Forms
             {
                 Text = "View Audit Logs",
                 Location = new Point(170, 130),
-                Width = 150,
-                // Anchor = AnchorStyles.Bottom | AnchorStyles.Left
+                Width = 150
             };
             btnViewAuditLogs.Click += BtnViewAuditLogs_Click;
 
+            btnViewArchive = new Button
+            {
+                Text = "View Archives (Partitioned)",
+                Location = new Point(330, 130),
+                Width = 180,
+                BackColor = Color.LightYellow
+            };
+            btnViewArchive.Click += BtnViewArchive_Click;
+
+            btnViewLoans = new Button
+            {
+                Text = "View All Loans",
+                Location = new Point(150, 170),
+                Width = 150,
+                BackColor = Color.LightSkyBlue,
+                Font = new Font(this.Font, FontStyle.Bold)
+            };
+            btnViewLoans.Click += BtnViewLoans_Click;
+
             txtSearch = new TextBox
             {
-                Location = new Point(470, 130),
-                Width = 200
+                Location = new Point(520, 130),
+                Width = 110
             };
             txtSearch.KeyDown += TxtSearch_KeyDown;
 
             btnSearch = new Button
             {
                 Text = "Search",
-                Location = new Point(680, 130),
+                Location = new Point(520 + 120, 130),
                 Width = 80
             };
             btnSearch.Click += BtnSearch_Click;
@@ -154,7 +174,7 @@ namespace IBMS.WinForms.Forms
             // --- 3. Data Grid ---
             gridCustomers = new DataGridView 
             { 
-                Location = new Point(12, 170), 
+                Location = new Point(12, 210), 
                 Size = new Size(760, 420),
                 Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
                 AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
@@ -171,8 +191,11 @@ namespace IBMS.WinForms.Forms
             this.Controls.Add(btnAdd);
             this.Controls.Add(btnEdit);
             this.Controls.Add(btnDelete);
+            this.Controls.Add(btnLoanApplication);
+            this.Controls.Add(btnViewLoans);
             this.Controls.Add(btnAccountSummary);
             this.Controls.Add(btnViewAuditLogs);
+            this.Controls.Add(btnViewArchive);
             this.Controls.Add(txtSearch);
             this.Controls.Add(btnSearch);
             this.Controls.Add(gridCustomers);
@@ -213,6 +236,28 @@ namespace IBMS.WinForms.Forms
             if (gridCustomers.SelectedRows.Count == 0) return null;
             // return gridCustomers.SelectedRows[0].DataBoundItem as CustomerViewModel;
             return gridCustomers.SelectedRows[0].DataBoundItem as Customer360ViewModel;
+        }
+
+        private void BtnLoanApplication_Click(object sender, EventArgs e)
+        {
+            var customer = GetSelectedCustomer();
+            if (customer == null)
+            {
+                MessageBox.Show("Please select a customer first.", "Selection Required");
+                return;
+            }
+            var accountIds = _bankingService.GetCustomerAccountIds(customer.CustomerID);
+
+            try
+            {
+                var form = new LoanApplicationForm(_bankingService, customer.CustomerID, accountIds, _currentUser.FullName);
+                if (form.ShowDialog() == DialogResult.OK)
+                    LoadCustomers();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error opening loan application: " + ex.Message);
+            }
         }
 
         private void BtnTransfer_Click(object sender, EventArgs e)
@@ -339,6 +384,20 @@ namespace IBMS.WinForms.Forms
             catch (Exception ex)
             {
                 MessageBox.Show($"Error during search: {ex.Message}", "Error");
+            }
+        }
+
+        private void BtnViewLoans_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var loans = _bankingService.GetAllLoans();
+                var form = new LoansListForm(loans, _bankingService);
+                form.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading loans: " + ex.Message);
             }
         }
     }

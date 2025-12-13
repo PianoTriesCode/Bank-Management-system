@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IBMS.TestConnection")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+95bacd312b91ad68fbb620c1a2e20ed31a5ca8c6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dd3ca2597670a6b2a3dee6e088ce69bc8df21c38")]
 [assembly: System.Reflection.AssemblyProductAttribute("IBMS.TestConnection")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IBMS.TestConnection")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

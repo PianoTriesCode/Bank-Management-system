@@ -1329,6 +1329,9 @@ CREATE PROCEDURE dbo.sp_ApplyForLoan
     @PrincipalAmount DECIMAL(18, 2),
     @InterestRate DECIMAL(5, 2),
     @TermMonths INT,
+    @StartDate DATE,
+    @EndDate DATE,
+    @Status VARCHAR(15),
     @AppliedBy NVARCHAR(100),
     @NewLoanID INT OUTPUT
 AS
@@ -1851,3 +1854,9 @@ BEGIN
     EXEC sp_LogAudit 'Loan', @LoanID, @Action, @PerformedBy, @Details;
 END;
 GO
+
+ALTER TABLE Loan
+ADD AppliedBy NVARCHAR(100) NULL;
+
+UPDATE Loan
+SET AppliedBy = 'Employee';

@@ -18,6 +18,7 @@ namespace IBMS.Data
         public DbSet<Branch> Branches { get; set; }
         public DbSet<AuditLog> AuditLog { get; set; }
         public DbSet<Customer360ViewModel> Customer360ViewModels { get; set; }
+        public DbSet<Loan> Loans { get; set; }
 
 
         // Standard constructor

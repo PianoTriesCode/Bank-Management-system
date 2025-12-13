@@ -7,6 +7,7 @@ namespace IBMS.Core.Interfaces
     {
         List<Customer360ViewModel> GetAllCustomer360();
         List<CustomerAccountSummary> GetCustomerAccountSummary(int customerId);
+        List<int> GetCustomerAccountIds(int customerId);
         Customer GetById(int id);
         int CreateCustomer(Customer c);
         void UpdateCustomer(Customer c);
